@@ -1,0 +1,9 @@
+numpy
+scikit-learn
+termcolor
+regex
+tqdm
+prettytable
+scipy
+nltk
+pexpect
