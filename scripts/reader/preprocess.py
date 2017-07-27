@@ -6,6 +6,7 @@
 # LICENSE file in the root directory of this source tree.
 """Preprocess the SQuAD dataset for training."""
 
+from __future__ import print_function
 import argparse
 import os
 import sys
