@@ -120,8 +120,6 @@ If you do not already have a CoreNLP [download](https://stanfordnlp.github.io/Co
 ./install_corenlp
 ```
 
-_You can also specify a download location: `./install_corenlp /path/to/jars`_
-
 Verify that it runs:
 ```python
 from drqa.tokenizers import CoreNLPTokenizer; 
