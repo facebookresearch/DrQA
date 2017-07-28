@@ -110,7 +110,7 @@ for line in open(args.dataset):
 
 model = os.path.splitext(os.path.basename(args.reader_model or 'default'))[0]
 basename = os.path.splitext(os.path.basename(args.dataset))[0]
-outfile = os.path.join(args.out_dir, basename + '-' + model + '-full.preds')
+outfile = os.path.join(args.out_dir, basename + '-' + model + '-pipeline.preds')
 
 logger.info('Writing results to %s' % outfile)
 with open(outfile, 'w') as f:

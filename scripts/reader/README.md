@@ -141,7 +141,7 @@ python scripts/reader/interactive.py --model /path/to/model
 ```
 
 ```
->>> text = "Mary had a little lamb, whose fleece was white as snow. And everywhere that Mary went the lamb was sure to go.""
+>>> text = "Mary had a little lamb, whose fleece was white as snow. And everywhere that Mary went the lamb was sure to go."
 >>> question = "What color is Mary's lamb?"
 >>> process(text, question)
 

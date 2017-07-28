@@ -92,7 +92,7 @@ Try some of your own! Of course, DrQA might provide alternative facts, so enjoy 
 
 _Setting up DrQA is easy!_
 
-DrQA requires Python 3.5 or higher. It also requires installing [PyTorch](http://pytorch.org/). Its other dependencies are listed in requirements.txt.
+DrQA requires Linux/OSX and Python 3.5 or higher. It also requires installing [PyTorch](http://pytorch.org/). Its other dependencies are listed in requirements.txt. CUDA is strongly recommended for speed, but not necessary.
 
 Run the following commands to clone the repository and install DrQA:
 
