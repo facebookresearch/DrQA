@@ -114,6 +114,21 @@ drqa.tokenizer.set_default('corenlp_classpath', '/your/corenlp/classpath/*')
 
 Ex: `export CLASSPATH=$CLASSPATH:/path/to/corenlp/download/*`.
 
+If you do not already have a CoreNLP [download](https://stanfordnlp.github.io/CoreNLP/index.html#download) you can run:
+
+```bash
+./install_corenlp
+```
+
+_You can also specify a download location: `./install_corenlp /path/to/jars`_
+
+Verify that it runs:
+```python
+from drqa.tokenizers import CoreNLPTokenizer; 
+tok = CoreNLPTokenizer()
+tok.tokenize('hello world').words()  # Should complete immediately
+```
+
 For convenience, the Document Reader, Retriever, and Pipeline modules will try to load default models if no model argument is given. See below for downloading these models.
 
 ### Trained Models and Data

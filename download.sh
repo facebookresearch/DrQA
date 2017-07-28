@@ -37,6 +37,9 @@ python scripts/convert/squad.py "$DATASET_PATH/SQuAD-v1.1-train.json" "$DATASET_
 wget -O "$DATASET_PATH/SQuAD-v1.1-dev.json" "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json"
 python scripts/convert/squad.py "$DATASET_PATH/SQuAD-v1.1-dev.json" "$DATASET_PATH/SQuAD-v1.1-dev.txt"
 
+# Download official eval for SQuAD
+curl "https://worksheets.codalab.org/rest/bundles/0xbcd57bee090b421c982906709c8c27e1/contents/blob/" >  "./scripts/reader/official_eval.py"
+
 # Get WebQuestions train
 wget -O "$DATASET_PATH/WebQuestions-train.json.bz2" "http://nlp.stanford.edu/static/software/sempre/release-emnlp2013/lib/data/webquestions/dataset_11/webquestions.examples.train.json.bz2"
 bunzip2 -f "$DATASET_PATH/WebQuestions-train.json.bz2"

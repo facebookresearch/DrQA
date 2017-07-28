@@ -132,6 +132,12 @@ Optional arguments:
 
 Note: The CoreNLP NER annotator is not fully deterministic (depends on the order examples are processed). Predictions may fluctuate very slightly between runs if `num-workers` > 1 and the model was trained with `use-ner` on.
 
+Evaluation is done with the official_eval.py script from the SQuAD creators, available [here](https://worksheets.codalab.org/rest/bundles/0xbcd57bee090b421c982906709c8c27e1/contents/blob/). It is also available by default at `scripts/reader/official_eval.py` after running `./download.sh`.
+
+```bash
+python scripts/reader/official_eval.py /path/to/format/B/dataset.json /path/to/predictions/with/--official/flag/set.json
+```
+
 ## Interactive
 
 The Document Reader can also be used interactively (like the [full pipeline](../../README.md#quick-start-demo)).
