@@ -1,6 +1,13 @@
 # DrQA
 This is a PyTorch implementation of the DrQA system described in the ACL 2017 paper [Reading Wikipedia to Answer Open-Domain Questions](https://arxiv.org/abs/1704.00051).
 
+## Quick Links
+
+- [About](#machine-reading-at-scale)
+- [Demo](#quick-start-demo)
+- [Installation](#installing-drqa)
+- [Components](#drqa-components)
+
 ## Machine Reading at Scale
 
 <p align="center"><img width="70%" src="img/drqa.png" /></p>
@@ -107,7 +114,7 @@ If you use the CoreNLPTokenizer or SpacyTokenizer you also need to download the 
 
 ```python
 import drqa.tokenizers
-drqa.tokenizer.set_default('corenlp_classpath', '/your/corenlp/classpath/*')
+drqa.tokenizers.set_default('corenlp_classpath', '/your/corenlp/classpath/*')
 ```
 
 **IMPORTANT: The default [tokenizer](#tokenizers) is CoreNLP so you will need that in your `CLASSPATH` to run the README examples.**
@@ -122,7 +129,7 @@ If you do not already have a CoreNLP [download](https://stanfordnlp.github.io/Co
 
 Verify that it runs:
 ```python
-from drqa.tokenizers import CoreNLPTokenizer; 
+from drqa.tokenizers import CoreNLPTokenizer
 tok = CoreNLPTokenizer()
 tok.tokenize('hello world').words()  # Should complete immediately
 ```
