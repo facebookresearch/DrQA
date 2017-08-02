@@ -38,6 +38,8 @@ parser.add_argument('--no-cuda', action='store_true',
                     help='Use CPU only')
 parser.add_argument('--gpu', type=int, default=-1,
                     help='Specify GPU device id to use')
+parser.add_argument('--no-normalize', action='store_true',
+                    help='Do not softmax normalize output scores.')
 args = parser.parse_args()
 
 args.cuda = not args.no_cuda and torch.cuda.is_available()
@@ -47,7 +49,8 @@ if args.cuda:
 else:
     logger.info('Running on CPU only.')
 
-predictor = Predictor(args.model, args.tokenizer, num_workers=0)
+predictor = Predictor(args.model, args.tokenizer, num_workers=0,
+                      normalize=not args.no_normalize)
 if args.cuda:
     predictor.cuda()
 
