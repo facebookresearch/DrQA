@@ -100,6 +100,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset', type=str, default=None)
     parser.add_argument('--model', type=str, default=None)
+    parser.add_argument('--doc-db', type=str, default=None,
+                        help='Path to Document DB')
     parser.add_argument('--tokenizer', type=str, default='regexp')
     parser.add_argument('--n-docs', type=int, default=5)
     parser.add_argument('--num-workers', type=int, default=None)
@@ -135,7 +137,7 @@ if __name__ == '__main__':
     tok_class = tokenizers.get_class(args.tokenizer)
     tok_opts = {}
     db_class = retriever.DocDB
-    db_opts = {}
+    db_opts = {'db_path': args.doc_db}
     processes = ProcessPool(
         processes=args.num_workers,
         initializer=init,

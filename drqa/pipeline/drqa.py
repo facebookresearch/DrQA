@@ -108,7 +108,7 @@ class DrQA(object):
         ranker_opts = ranker_config.get('options', {})
         self.ranker = ranker_class(**ranker_opts)
 
-        logger.info('Initializing model...')
+        logger.info('Initializing document reader...')
         reader_model = reader_model or DEFAULTS['reader_model']
         self.reader = reader.DocReader.load(reader_model, normalize=False)
         if embedding_file:
