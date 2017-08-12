@@ -124,7 +124,7 @@ Ex: `export CLASSPATH=$CLASSPATH:/path/to/corenlp/download/*`.
 If you do not already have a CoreNLP [download](https://stanfordnlp.github.io/CoreNLP/index.html#download) you can run:
 
 ```bash
-./install_corenlp
+./install_corenlp.sh
 ```
 
 Verify that it runs:
