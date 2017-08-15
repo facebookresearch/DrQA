@@ -317,7 +317,7 @@ Optional arguments:
 --reader-model    Path to trained Document Reader model.
 --retriever-model Path to Document Retriever model (tfidf).
 --doc-db          Path to Document DB.
---tokenizers      String option specifying tokenizer type to use (e.g. 'corenlp').
+--tokenizer      String option specifying tokenizer type to use (e.g. 'corenlp').
 --candidate-file  List of candidates to restrict predictions to, one candidate per line.
 --no-cuda         Use CPU only.
 --gpu             Specify GPU device id to use.
