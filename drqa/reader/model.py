@@ -457,7 +457,7 @@ class DocReader(object):
 
     def cuda(self):
         self.use_cuda = True
-        self.netowork = self.network.cuda()
+        self.network = self.network.cuda()
 
     def cpu(self):
         self.use_cuda = False
