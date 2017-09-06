@@ -393,4 +393,4 @@ This implementation of the DrQA Document Reader is closely related to the one fo
 We plan to consolidate this model into the ParlAI interface as well, so that the reader can be interchangeably trained here or multitasked on many datasets with ParlAI.
 
 ## License
-DrQA has a CC-BY-NC license.
+DrQA is BSD-licensed. We also provide an additional patent grant.
