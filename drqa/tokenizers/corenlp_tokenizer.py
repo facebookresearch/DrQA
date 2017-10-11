@@ -100,6 +100,9 @@ class CoreNLPTokenizer(Tokenizer):
         start = output.find(b'{"sentences":')
         output = json.loads(output[start:].decode('utf-8'))
 
+        # Make the java process quit now we are finished
+        self.corenlp.sendline("q\n".encode('utf-8'))
+        
         data = []
         tokens = [t for s in output['sentences'] for t in s['tokens']]
         for i in range(len(tokens)):
