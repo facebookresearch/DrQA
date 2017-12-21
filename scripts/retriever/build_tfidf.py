@@ -83,7 +83,7 @@ def count(ngram, hash_size, doc_id):
     return row, col, data
 
 
-def get_count_matrix(args, db, db_opts):
+def get_count_matrix(ngram, hash_size, num_workers, tokenizer, db, db_opts):
     """Form a sparse word to document count matrix (inverted index).
 
     M[i, j] = # times word i appears in document j.
@@ -96,9 +96,9 @@ def get_count_matrix(args, db, db_opts):
     DOC2IDX = {doc_id: i for i, doc_id in enumerate(doc_ids)}
 
     # Setup worker pool
-    tok_class = tokenizers.get_class(args.tokenizer)
+    tok_class = tokenizers.get_class(tokenizer)
     workers = ProcessPool(
-        args.num_workers,
+        num_workers,
         initializer=init,
         initargs=(tok_class, db_class, db_opts)
     )
@@ -108,7 +108,7 @@ def get_count_matrix(args, db, db_opts):
     row, col, data = [], [], []
     step = max(int(len(doc_ids) / 10), 1)
     batches = [doc_ids[i:i + step] for i in range(0, len(doc_ids), step)]
-    _count = partial(count, args.ngram, args.hash_size)
+    _count = partial(count, ngram, hash_size)
     for i, batch in enumerate(batches):
         logger.info('-' * 25 + 'Batch %d/%d' % (i + 1, len(batches)) + '-' * 25)
         for b_row, b_col, b_data in workers.imap_unordered(_count, batch):
@@ -120,7 +120,7 @@ def get_count_matrix(args, db, db_opts):
 
     logger.info('Creating sparse matrix...')
     count_matrix = sp.csr_matrix(
-        (data, (row, col)), shape=(args.hash_size, len(doc_ids))
+        (data, (row, col)), shape=(hash_size, len(doc_ids))
     )
     count_matrix.sum_duplicates()
     return count_matrix, (DOC2IDX, doc_ids)
@@ -154,7 +154,34 @@ def get_doc_freqs(cnts):
     freqs = np.array(binary.sum(1)).squeeze()
     return freqs
 
+def build_model(db_path, out_dir, ngram=2, hash_size=int(math.pow(2, 24)), tokenizer='simple', num_workers=None):
+    ''' build tf-idf model '''
 
+    logging.info('Counting words...')
+    count_matrix, doc_dict = get_count_matrix(
+        ngram, hash_size, num_workers, tokenizer, 'sqlite', {'db_path': db_path}
+    )
+
+    logger.info('Making tfidf vectors...')
+    tfidf = get_tfidf_matrix(count_matrix)
+
+    logger.info('Getting word-doc frequencies...')
+    freqs = get_doc_freqs(count_matrix)
+
+    basename = os.path.splitext(os.path.basename(db_path))[0]
+    basename += ('-tfidf-ngram=%d-hash=%d-tokenizer=%s' %
+                 (ngram, hash_size, tokenizer))
+    filename = os.path.join(out_dir, basename)
+
+    logger.info('Saving to %s.npz' % filename)
+    metadata = {
+        'doc_freqs': freqs,
+        'tokenizer': tokenizer,
+        'hash_size': hash_size,
+        'ngram': ngram,
+        'doc_dict': doc_dict
+    }
+    retriever.utils.save_sparse_csr(filename, tfidf, metadata)
 # ------------------------------------------------------------------------------
 # Main.
 # ------------------------------------------------------------------------------
@@ -178,28 +205,4 @@ if __name__ == '__main__':
                         help='Number of CPU processes (for tokenizing, etc)')
     args = parser.parse_args()
 
-    logging.info('Counting words...')
-    count_matrix, doc_dict = get_count_matrix(
-        args, 'sqlite', {'db_path': args.db_path}
-    )
-
-    logger.info('Making tfidf vectors...')
-    tfidf = get_tfidf_matrix(count_matrix)
-
-    logger.info('Getting word-doc frequencies...')
-    freqs = get_doc_freqs(count_matrix)
-
-    basename = os.path.splitext(os.path.basename(args.db_path))[0]
-    basename += ('-tfidf-ngram=%d-hash=%d-tokenizer=%s' %
-                 (args.ngram, args.hash_size, args.tokenizer))
-    filename = os.path.join(args.out_dir, basename)
-
-    logger.info('Saving to %s.npz' % filename)
-    metadata = {
-        'doc_freqs': freqs,
-        'tokenizer': args.tokenizer,
-        'hash_size': args.hash_size,
-        'ngram': args.ngram,
-        'doc_dict': doc_dict
-    }
-    retriever.utils.save_sparse_csr(filename, tfidf, metadata)
+    build_model(args.db_path, args.out_dir, args.ngram, args.hash_size, args.tokenizer, args.num_workers)
