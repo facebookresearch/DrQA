@@ -36,7 +36,7 @@ The input dataset files must be in [format A](../../README.md#format-a).
 
 The generated datasets are already in the preprocessed format required for the [Document Reader training](../reader/README.md#training). To combine different distantly supervised datasets, simply concatenate the files.
 
-By default, the script will put all the generated data in the training set (specified as `.dstrain`). To hold out some data for fine tuning, adjust the `--dev-split` parameter (for multi-tasking the standard SQuAD dev set can be used). The generated dev set will end with `.dstrain`.
+By default, the script will put all the generated data in the training set (specified as `.dstrain`). To hold out some data for fine tuning, adjust the `--dev-split` parameter (for multi-tasking the standard SQuAD dev set can be used). The generated dev set will end with `.dsdev`.
 
 Note that if the dataset has answers in the form of regular expressions (e.g. CuratedTrec), the `--regex` flag must be set.
 
