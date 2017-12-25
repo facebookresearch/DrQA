@@ -359,7 +359,7 @@ DrQA's performance improves significantly in the full-setting when provided with
 >DS Document: Live Free or Die
  **“Live Free or Die”** is the official **motto** of the **U.S. state** of _**New Hampshire**_, adopted by the **state** in 1945. It is possibly the best-known of all state mottos, partly because it conveys an assertive independence historically found in American political philosophy and partly because of its contrast to the milder sentiments found in other state mottos.
 
-The `scripts/distant` directory contains code to generate and inspect such distantly supervised data.
+The `scripts/distant` directory contains code to generate and inspect such distantly supervised data. More information can be found in the distant supervision [README](scripts/distant/README.md).
 
 ### Tokenizers
 
