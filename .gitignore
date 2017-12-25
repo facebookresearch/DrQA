@@ -5,3 +5,6 @@ data/
 *.tar.gz
 *.egg-info
 scripts/reader/official_eval.py
+*.txt
+*.swp
+*.csv
