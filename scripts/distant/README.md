@@ -64,16 +64,15 @@ This will allow you to manually iterate through the dataset and visually inspect
 ```bash
 python scripts/distant/check_data.py data/generated/WikiMovies-train.dstrain
 ```
-```
---------------------------------------------------
-Question: what films can be described by juzo itami ?
 
-Document: Itami 's debut as director was the movie `` Osōshiki ( **The Funeral** ) '' in 1984 , at the age of 50 . This film proved popular in Japan and won many awards , including Japanese Academy Awards for Best Picture , Best Director , and Best Screenplay . However , it was his second movie , the `` noodle western '' `` Tampopo '' , that earned him international exposure and acclaim .
-```
+>--------------------------------------------------
+>Question: what films can be described by juzo itami ?
+>
+>Document: Itami 's debut as director was the movie `` Osōshiki ( **The Funeral** ) '' in 1984 , at the age of 50 . This film proved popular in Japan and won many awards , including Japanese Academy Awards for Best Picture , Best Director , and Best Screenplay . However , it was his second movie , the `` noodle western '' `` Tampopo '' , that earned him international exposure and acclaim .
 
 Note: The script in the repository is slightly modified from the original. Some of the logic was improved and it is faster. The number of DS instances it generates will be different from the paper, however. The performance is still similar, and the multitask models available in this repository were trained on data generated with the provided script.
 
-If run with the default arguments, the expected number of generated examples are:
+If run with the default arguments, the expected numbers of generated examples are:
 
 | Dataset       | Examples  |
 | ------------- |:---------:|
