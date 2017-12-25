@@ -49,7 +49,7 @@ Paragraphs are skipped if:
 3. They don't contain token matches with named entities found in the question (using both NER recognizers from NLTK and the default for the `--tokenizer` option).
 4. The overlap between the context and the question is too low.
 
-Setting different thresholds for 1 and 4 can change the quality of found matches. These are adjusted through the `--match-threshold`, `--char-max`, `--char-min`, and `--window-sz` parameters.
+Setting different thresholds for conditions 1 and 4 can change the quality of found matches. These are adjusted through the `--match-threshold`, `--char-max`, `--char-min`, and `--window-sz` parameters.
 
 ## Checking Results
 
@@ -65,12 +65,11 @@ This will allow you to manually iterate through the dataset and visually inspect
 python scripts/distant/check_data.py data/generated/WikiMovies-train.dstrain
 ```
 
->--------------------------------------------------
 >Question: what films can be described by juzo itami ?
 >
->Document: Itami 's debut as director was the movie `` Osōshiki ( **The Funeral** ) '' in 1984 , at the age of 50 . This film proved popular in Japan and won many awards , including Japanese Academy Awards for Best Picture , Best Director , and Best Screenplay . However , it was his second movie , the `` noodle western '' `` Tampopo '' , that earned him international exposure and acclaim .
+>Document: Itami 's debut as director was the movie \`\` Osōshiki ( _**The Funeral**_ ) '' in 1984 , at the age of 50 . This film proved popular in Japan and won many awards , including Japanese Academy Awards for Best Picture , Best Director , and Best Screenplay . However , it was his second movie , the \`\` noodle western '' \`\` Tampopo '' , that earned him international exposure and acclaim .
 
-Note: The script in the repository is slightly modified from the original. Some of the logic was improved and it is faster. The number of DS instances it generates will be different from the paper, however. The performance is still similar, and the multitask models available in this repository were trained on data generated with the provided script.
+**Note:** The script in the repository is slightly modified from the original. Some of the logic was improved and it is faster. The number of DS instances it generates will be different from the paper, however. The performance is still similar, and the multitask models available in this repository were trained on data generated with the provided script.
 
 If run with the default arguments, the expected numbers of generated examples are:
 
