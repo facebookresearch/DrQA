@@ -60,14 +60,15 @@ if args.cuda:
 # ------------------------------------------------------------------------------
 
 
-def process(document, question, candidates=None, top_n=1):
+def process(doc_list, question, candidates=None, top_n=1):
     t0 = time.time()
-    predictions = predictor.predict(document, question, candidates, top_n)
-    table = prettytable.PrettyTable(['Rank', 'Span', 'Score'])
-    for i, p in enumerate(predictions, 1):
-        table.add_row([i, p[0], p[1]])
-    print(table)
-    print('Time: %.4f' % (time.time() - t0))
+    for document in doc_list:
+        predictions = predictor.predict(document, question, candidates, top_n)
+        table = prettytable.PrettyTable(['Rank', 'Span', 'Score'])
+        for i, p in enumerate(predictions, 1):
+            table.add_row([i, p[0], p[1]])
+        print(table)
+        print('Time: %.4f' % (time.time() - t0))
 
 
 banner = """
