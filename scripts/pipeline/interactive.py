@@ -81,12 +81,12 @@ def process(question, candidates=None, top_n=1, n_docs=5):
         question, candidates, top_n, n_docs, return_context=True
     )
     table = prettytable.PrettyTable(
-        ['Rank', 'Answer', 'Doc', 'Answer Score', 'Doc Score']
+        ['Rank', 'Answer', 'Doc', 'Answer Score'] #, 'Doc Score']
     )
     for i, p in enumerate(predictions, 1):
         table.add_row([i, p['span'], p['doc_id'],
-                       '%.5g' % p['span_score'],
-                       '%.5g' % p['doc_score']])
+                       '%.5g' % p['span_score']]) #,
+                       # '%.5g' % p['doc_score']])
     print('Top Predictions:')
     print(table)
     print('\nContexts:')
@@ -112,4 +112,6 @@ def usage():
     print(banner)
 
 
-code.interact(banner=banner, local=locals())
+# code.interact(banner=banner, local=locals())
+
+print(process("Twitch for how much?"))
