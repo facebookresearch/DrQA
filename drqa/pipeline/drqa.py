@@ -38,8 +38,8 @@ def init(tokenizer_class, tokenizer_opts, db_class, db_opts, candidates=None):
     global PROCESS_TOK, PROCESS_DB, PROCESS_CANDS
     PROCESS_TOK = tokenizer_class(**tokenizer_opts)
     Finalize(PROCESS_TOK, PROCESS_TOK.shutdown, exitpriority=100)
-    PROCESS_DB = db_class(**db_opts)
-    Finalize(PROCESS_DB, PROCESS_DB.close, exitpriority=100)
+    # PROCESS_DB = db_class(**db_opts) # comment this when we are not using any Doc DB - just documents imported below
+    # Finalize(PROCESS_DB, PROCESS_DB.close, exitpriority=100)
     PROCESS_CANDS = candidates
 
 
@@ -106,7 +106,7 @@ class DrQA(object):
         ranker_config = ranker_config or {}
         ranker_class = ranker_config.get('class', DEFAULTS['ranker'])
         ranker_opts = ranker_config.get('options', {})
-        self.ranker = ranker_class(**ranker_opts)
+        # self.ranker = ranker_class(**ranker_opts) # comment out when we arent importing any npz model
 
         logger.info('Initializing document reader...')
         reader_model = reader_model or DEFAULTS['reader_model']
