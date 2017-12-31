@@ -94,6 +94,11 @@ def process(question, dox, candidates=None, top_n=3, n_docs=5):
     # print('Top Predictions:')
     # print(table)
 
+
+
+
+
+
     # print('\nContexts:')
     # for p in predictions:
     #     text = p['context']['text'] # b/c context false
@@ -104,7 +109,7 @@ def process(question, dox, candidates=None, top_n=3, n_docs=5):
     #               text[end:])
     #     print('[ Doc = %s ]' % p['doc_id'])
     #     print(output + '\n')
-
+    # return str(table)
 
 # banner = """
 # Interactive DrQA
@@ -118,7 +123,5 @@ def process(question, dox, candidates=None, top_n=3, n_docs=5):
 
 
 # code.interact(banner=banner, local=locals())
-
-# For local testing:
 # dox = "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"
 # print(process("Twitch for how much?", dox, top_n = 3))
