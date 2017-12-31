@@ -286,8 +286,8 @@ class DrQA(object):
 
         molly_tokens = self.processes.map_async(tokenize_text, molly_texts)
         molly_tokens = molly_tokens.get()
-        print('molly_tokens \n\n\n\n')
-        print(molly_tokens)
+        # print('molly_tokens \n\n\n\n')
+        # print(molly_tokens)
 
 
         new_examples = []
@@ -301,8 +301,8 @@ class DrQA(object):
                             'pos': molly_tokens[i].pos(),
                             'ner': molly_tokens[i].entities(),
                         })
-        print('new_examples \n\n\n\n')
-        print(new_examples)
+        # print('new_examples \n\n\n\n')
+        # print(new_examples)
 
 
 
@@ -539,8 +539,8 @@ class DrQA(object):
 
 
 
-        print("new all predictions \n\n\n")
-        print(new_all_predictions[0]) # This is the JSON I wanna return.
+        # print("new all predictions \n\n\n")
+        # print(new_all_predictions[0]) # This is the JSON I wanna return.
 
         return new_all_predictions
 
