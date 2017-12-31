@@ -212,8 +212,6 @@ class DrQA(object):
         ################
 
 
-
-
         # Rank documents for queries.
         # if len(queries) == 1:
         #     ranked = [self.ranker.closest_docs(queries[0], k=n_docs)]
@@ -250,7 +248,8 @@ class DrQA(object):
         # print(flat_splits[0])
         # print("didx2sidx {}".format(didx2sidx))
 
-
+        # s_tokens = self.processes.map_async(tokenize_text, flat_splits)
+        # s_tokens = s_tokens.get()
 
         # print('s_tokens {}'.format(s_tokens[0].words()))
         # Group into structured example inputs. Examples' ids represent
@@ -350,10 +349,35 @@ class DrQA(object):
         #             (len(queries), time.time() - t0))
 
 
+        ################
+        ################
+        ################
+        ################
+        ################
+        ################
+        ################
+        # EDITED CODE
+        # Instead of using DrQA document retrevier, this simply reads a set of documents 
+        # that are given. In this case, we're reading from a JSON file.
+        # Crucially, we feed `molly_texts` to the tokenizer. This is just a list 
+        # of strings. 
+
+        # Code is not currently set up with document titles or ids.
+        # Might be something that is desired.   
+        ################
+        ################
+        ################
+        ################
+        ################
+        ################
+        ################
+        ################
+        ################
+
+
 
         with urllib.request.urlopen(dox) as url:
             molly_data = json.loads(url.read().decode())
-
 
         molly_texts = []
         molly_ids = []
@@ -362,22 +386,12 @@ class DrQA(object):
             molly_texts.append(post.get('content'))
 
 
-
-
-
         # Push through the tokenizers as fast as possible.
         q_tokens = self.processes.map_async(tokenize_text, queries)
-        # s_tokens = self.processes.map_async(tokenize_text, flat_splits)
         q_tokens = q_tokens.get()
-        # s_tokens = s_tokens.get()
-
-
 
         molly_tokens = self.processes.map_async(tokenize_text, molly_texts)
         molly_tokens = molly_tokens.get()
-        # print('molly_tokens \n\n\n\n')
-        # print(molly_tokens)
-
 
         new_examples = []
         for i in range(len(molly_texts)):
@@ -390,10 +404,6 @@ class DrQA(object):
                             'pos': molly_tokens[i].pos(),
                             'ner': molly_tokens[i].entities(),
                         })
-        # print('new_examples \n\n\n\n')
-        # print(new_examples)
-
-
 
 
         # Push all examples through the document reader.
@@ -403,6 +413,9 @@ class DrQA(object):
         # num_loaders = min(self.max_loaders, math.floor(len(examples) / 1e3))
         print("num_loaders {}".format(new_num_loaders))
         for new_batch in self._get_loader(new_examples, new_num_loaders):
+            #### Don't use candidates
+            #
+            #
             # if candidates or self.fixed_candidates:
             #     batch_cands = []
             #     for ex_id in batch[-1]:
@@ -417,11 +430,7 @@ class DrQA(object):
             new_handle = self.reader.predict(new_batch, async_pool=self.processes)
             new_result_handles.append((new_handle, new_batch[-1], new_batch[0].size(0)))
 
-
-
-
-
-                # Iterate through the predictions, and maintain priority queues for
+        # Iterate through the predictions, and maintain priority queues for
         # top scored answers for each question in the batch.
         new_queues = [[] for _ in range(len(queries))]
         for new_result, new_ex_ids, new_batch_size in new_result_handles:
@@ -437,12 +446,6 @@ class DrQA(object):
                         heapq.heappushpop(queue, item)
 
 
-
-
-
-
-        ### try last step?
-
         new_all_predictions = []
         for queue in new_queues:
             new_predictions = []
@@ -451,6 +454,8 @@ class DrQA(object):
                 new_prediction = {
                     'doc_id': molly_ids[new_qidx], #[new_rel_didx],
                     'span': molly_tokens[new_sidx].slice(new_s, new_e + 1).untokenize(),
+                    # Remove doc_score because we didn't score the documents.
+                    # We just take them as given. 
                     # 'doc_score': float(new_all_doc_scores[qidx][rel_didx]),
                     'span_score': float(new_score),
                 }
@@ -467,13 +472,6 @@ class DrQA(object):
                     (len(queries), time.time() - t0))
 
 
-
-
-
-
-
-        # print("new all predictions \n\n\n")
-        # print(new_all_predictions[0]) # This is the JSON I wanna return.
 
         return new_all_predictions
 
