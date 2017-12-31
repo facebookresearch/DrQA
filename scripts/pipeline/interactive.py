@@ -111,11 +111,11 @@ def process(question, dox, candidates=None, top_n=3, n_docs=5):
     #     print(output + '\n')
     # return str(table)
 
-banner = """
-Interactive DrQA
->> process(question, candidates=None, top_n=1, n_docs=5)
->> usage()
-"""
+# banner = """
+# Interactive DrQA
+# >> process(question, candidates=None, top_n=1, n_docs=5)
+# >> usage()
+# """
 
 
 # def usage():
