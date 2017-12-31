@@ -216,8 +216,8 @@ class DrQA(object):
         # print(all_docids, all_doc_scores)
 
         import urllib.request, json 
-
-        with urllib.request.urlopen("https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606") as url:
+        dox = "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"
+        with urllib.request.urlopen(dox) as url:
             molly_data = json.loads(url.read().decode())
 
 
@@ -540,7 +540,7 @@ class DrQA(object):
 
 
         print("new all predictions \n\n\n")
-        print(new_all_predictions)
+        print(new_all_predictions[0]) # This is the JSON I wanna return.
 
         return new_all_predictions
 

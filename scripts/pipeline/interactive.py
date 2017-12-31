@@ -78,7 +78,7 @@ DrQA = pipeline.DrQA(
 
 def process(question, candidates=None, top_n=1, n_docs=5):
     predictions = DrQA.process(
-        question, candidates, top_n, n_docs, return_context=True
+        question, candidates, top_n, n_docs, return_context=False
     )
     table = prettytable.PrettyTable(
         ['Rank', 'Answer', 'Doc', 'Answer Score'] #, 'Doc Score']
@@ -113,5 +113,5 @@ def usage():
 
 
 # code.interact(banner=banner, local=locals())
-
+dox = "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"
 print(process("Twitch for how much?", top_n = 3))
