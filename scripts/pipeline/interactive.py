@@ -78,7 +78,7 @@ DrQA = pipeline.DrQA(
 
 def process(question, dox, candidates=None, top_n=1, n_docs=5):
     predictions = DrQA.process(
-        question, dox, candidates, top_n, n_docs, return_context=False
+        question, dox, candidates, top_n, n_docs, return_context=False #turn to true for context (highlighted...)
     )
     table = prettytable.PrettyTable(
         ['Rank', 'Answer', 'Doc', 'Answer Score'] #, 'Doc Score']
@@ -89,16 +89,16 @@ def process(question, dox, candidates=None, top_n=1, n_docs=5):
                        # '%.5g' % p['doc_score']])
     print('Top Predictions:')
     print(table)
-    print('\nContexts:')
-    for p in predictions:
-        text = p['context']['text']
-        start = p['context']['start']
-        end = p['context']['end']
-        output = (text[:start] +
-                  colored(text[start: end], 'green', attrs=['bold']) +
-                  text[end:])
-        print('[ Doc = %s ]' % p['doc_id'])
-        print(output + '\n')
+    # print('\nContexts:')
+    # for p in predictions:
+    #     text = p['context']['text'] # b/c context false
+    #     start = p['context']['start']
+    #     end = p['context']['end']
+    #     output = (text[:start] +
+    #               colored(text[start: end], 'green', attrs=['bold']) +
+    #               text[end:])
+    #     print('[ Doc = %s ]' % p['doc_id'])
+    #     print(output + '\n')
 
 
 banner = """
