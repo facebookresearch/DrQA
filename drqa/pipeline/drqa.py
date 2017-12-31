@@ -176,16 +176,16 @@ class DrQA(object):
         )
         return loader
 
-    def process(self, query, candidates=None, top_n=1, n_docs=5,
+    def process(self, query, dox, candidates=None, top_n=1, n_docs=5,
                 return_context=False):
         """Run a single query."""
         predictions = self.process_batch(
-            [query], [candidates] if candidates else None,
+            [query], dox, [candidates] if candidates else None,
             top_n, n_docs, return_context
         )
         return predictions[0]
 
-    def process_batch(self, queries, candidates=None, top_n=1, n_docs=5,
+    def process_batch(self, queries, dox, candidates=None, top_n=1, n_docs=5,
                       return_context=False):
         """Run a batch of queries (more efficient)."""
         t0 = time.time()
@@ -216,7 +216,7 @@ class DrQA(object):
         # print(all_docids, all_doc_scores)
 
         import urllib.request, json 
-        dox = "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"
+        # dox = "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"
         with urllib.request.urlopen(dox) as url:
             molly_data = json.loads(url.read().decode())
 
