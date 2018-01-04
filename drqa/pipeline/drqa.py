@@ -184,7 +184,8 @@ class DrQA(object):
             [query], dox, [candidates] if candidates else None,
             top_n, n_docs, return_context
         )
-        return predictions[0]
+        # return predictions[0]
+        return predictions
 
     def process_batch(self, queries, dox, candidates=None, top_n=1, n_docs=5,
                       return_context=False):
@@ -353,13 +354,18 @@ class DrQA(object):
 
         with urllib.request.urlopen(dox) as url:
             molly_data = json.loads(url.read().decode())
-
+            # print(molly_data)
 
         molly_texts = []
         molly_ids = []
+        id_dict= {}
         for i, post in enumerate(molly_data['blog']):
+            # molly_ids.append(i)
             molly_ids.append(i)
+            id_dict[i] = str(molly_data['blog'][i]['id'])
             molly_texts.append(post.get('content'))
+        print('id_dict')
+        print(id_dict)
 
 
 
@@ -381,8 +387,10 @@ class DrQA(object):
 
         new_examples = []
         for i in range(len(molly_texts)):
+        # for i in molly_ids:
             new_examples.append({
                             'id': (0, i, i),
+                            # 'id': (i),
                             'question': q_tokens[0].words(),
                             'qlemma': q_tokens[0].lemmas(),
                             'document': molly_tokens[i].words(),
@@ -416,6 +424,9 @@ class DrQA(object):
             # else:
             new_handle = self.reader.predict(new_batch, async_pool=self.processes)
             new_result_handles.append((new_handle, new_batch[-1], new_batch[0].size(0)))
+            print('new_result_handles')
+            print('\n\n\n')
+            print(new_result_handles)
 
 
 
@@ -423,6 +434,7 @@ class DrQA(object):
 
                 # Iterate through the predictions, and maintain priority queues for
         # top scored answers for each question in the batch.
+        final_ids = []
         new_queues = [[] for _ in range(len(queries))]
         for new_result, new_ex_ids, new_batch_size in new_result_handles:
             new_s, new_e, new_score = new_result.get()
@@ -432,6 +444,10 @@ class DrQA(object):
                     item = (new_score[i][0], new_ex_ids[i], new_s[i][0], new_e[i][0])
                     queue = new_queues[new_ex_ids[i][0]]
                     if len(queue) < top_n:
+                        # print(list(list(item)[1])[1]) # printing out doc ids
+                        # print(list(new_ex_ids[i])[1])
+                        # print('\n\n\n\n\n')
+                        final_ids.append(list(list(item)[1])[1])
                         heapq.heappush(queue, item)
                     else:
                         heapq.heappushpop(queue, item)
@@ -448,12 +464,22 @@ class DrQA(object):
             new_predictions = []
             while len(queue) > 0:
                 new_score, (new_qidx, new_rel_didx, new_sidx), new_s, new_e = heapq.heappop(queue)
+                print('new_rel_didx')
+                print('\n\n\n')
+                print(new_rel_didx)
                 new_prediction = {
-                    'doc_id': molly_ids[new_qidx], #[new_rel_didx],
+                    'doc_id': id_dict[new_rel_didx], #[new_rel_didx],
                     'span': molly_tokens[new_sidx].slice(new_s, new_e + 1).untokenize(),
                     # 'doc_score': float(new_all_doc_scores[qidx][rel_didx]),
                     'span_score': float(new_score),
+                    'content' : molly_texts[new_rel_didx]
                 }
+                for i, dictt in enumerate(molly_data['blog']):
+                    did = dictt['id']
+                    if did == '77f02328-1aef-4082-9548-19b8146acfbe':
+                        molly_data['blog'][i]['span'] = molly_tokens[new_sidx].slice(new_s, new_e + 1).untokenize()
+                        molly_data['blog'][i]['span_score'] = float(new_score)
+
                 if return_context:
                     new_prediction['context'] = {
                         'text': molly_tokens[new_sidx].untokenize(),
@@ -461,6 +487,9 @@ class DrQA(object):
                         'end': molly_tokens[new_sidx].offsets()[new_e][1],
                     }
                 new_predictions.append(new_prediction)
+                print(new_predictions)
+                print('new_predictions')
+                print('\n\n\n')
             new_all_predictions.append(new_predictions[-1::-1])
 
         logger.info('Processed %d queries in %.4f (s)' %
@@ -475,7 +504,7 @@ class DrQA(object):
         # print("new all predictions \n\n\n")
         # print(new_all_predictions[0]) # This is the JSON I wanna return.
 
-        return new_all_predictions
-
+        # return new_all_predictions
+        return molly_data
 
 
