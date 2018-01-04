@@ -474,9 +474,9 @@ class DrQA(object):
                     'span_score': float(new_score),
                     'content' : molly_texts[new_rel_didx]
                 }
-                for i, dictt in enumerate(molly_data['blog']):
-                    did = dictt['id']
-                    if did == '77f02328-1aef-4082-9548-19b8146acfbe':
+                for i, dictt in enumerate(molly_data['blog']): # for every blog post as dictionary
+                    did = dictt['id'] # did is the id of the dictionary
+                    if did == id_dict[new_rel_didx]:
                         molly_data['blog'][i]['span'] = molly_tokens[new_sidx].slice(new_s, new_e + 1).untokenize()
                         molly_data['blog'][i]['span_score'] = float(new_score)
 
