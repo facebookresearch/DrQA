@@ -177,8 +177,13 @@ class DrQA(object):
         )
         return loader
 
-    def process(self, query, dox, candidates=None, top_n=1, n_docs=5,
-                return_context=False):
+    def process(self, 
+                    query, 
+                    dox, 
+                    candidates=None, 
+                    top_n=1, 
+                    n_docs=5,
+                    return_context=False):
         """Run a single query."""
         predictions = self.process_batch(
             [query], dox, [candidates] if candidates else None,
@@ -187,7 +192,12 @@ class DrQA(object):
         # return predictions[0]
         return predictions
 
-    def process_batch(self, queries, dox, candidates=None, top_n=1, n_docs=5,
+    def process_batch(self, 
+                        queries, 
+                        dox, 
+                        candidates=None, 
+                        top_n=5, 
+                        n_docs=5,
                       return_context=False):
         """Run a batch of queries (more efficient)."""
         t0 = time.time()
@@ -364,8 +374,6 @@ class DrQA(object):
             molly_ids.append(i)
             id_dict[i] = str(molly_data['blog'][i]['id'])
             molly_texts.append(post.get('content'))
-        print('id_dict')
-        print(id_dict)
 
 
 
@@ -432,7 +440,7 @@ class DrQA(object):
 
 
 
-                # Iterate through the predictions, and maintain priority queues for
+        # Iterate through the predictions, and maintain priority queues for
         # top scored answers for each question in the batch.
         final_ids = []
         new_queues = [[] for _ in range(len(queries))]
@@ -454,19 +462,14 @@ class DrQA(object):
 
 
 
-
-
-
-        ### try last step?
-
         new_all_predictions = []
         for queue in new_queues:
             new_predictions = []
             while len(queue) > 0:
                 new_score, (new_qidx, new_rel_didx, new_sidx), new_s, new_e = heapq.heappop(queue)
-                print('new_rel_didx')
-                print('\n\n\n')
-                print(new_rel_didx)
+                # print('new_rel_didx')
+                # print('\n\n\n')
+                # print(new_rel_didx)
                 new_prediction = {
                     'doc_id': id_dict[new_rel_didx], #[new_rel_didx],
                     'span': molly_tokens[new_sidx].slice(new_s, new_e + 1).untokenize(),
@@ -487,24 +490,15 @@ class DrQA(object):
                         'end': molly_tokens[new_sidx].offsets()[new_e][1],
                     }
                 new_predictions.append(new_prediction)
-                print(new_predictions)
-                print('new_predictions')
-                print('\n\n\n')
+                # print(new_predictions)
+                # print('new_predictions')
+                # print('\n\n\n')
             new_all_predictions.append(new_predictions[-1::-1])
 
         logger.info('Processed %d queries in %.4f (s)' %
                     (len(queries), time.time() - t0))
 
 
-
-
-
-
-
-        # print("new all predictions \n\n\n")
-        # print(new_all_predictions[0]) # This is the JSON I wanna return.
-
-        # return new_all_predictions
         return molly_data
 
 

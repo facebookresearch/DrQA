@@ -4,37 +4,18 @@
 from flask import Flask, session, request,  jsonify
 from scripts.pipeline.interactive import process
 
-# from func import addsev, openurl
-
 app = Flask(__name__)
 
-# def addnine(x):
-# 	return x+9
-
-@app.route('/json-example', methods=['POST']) #GET requests will be blocked
-def json_example():
+@app.route('/drqa', methods=['GET']) #GET requests will be blocked
+def drqa():
+    # Send query with get request
     req_data = request.get_json()
-
-    output = process(req_data['query'], req_data['dox'], top_n=3)
-
-
-    # number = addsev(req_data['number'])
-    # python_version = req_data['version_info']['python'] #two keys are needed because of the nested object
-    # example = req_data['examples'][0] #an index is needed because of the array
-    # boolean_test = req_data['boolean_test']
-
+    # Call drqa/scripts/pipeline/interactive which calls drqa/pipeline/drqa.py
+    output = process(req_data['query'], dox = "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606")
     return jsonify(output)
-
-    '''
-           The language value is: {}
-           The framework value is: {}
-           The Python version is: {}
-           The item at index 0 in the example list is: {}
-           The boolean value is: {}'''#.format(language, number, python_version, example, boolean_test)
 
 if __name__ == '__main__':
     app.run(debug=True)
 
-
- # curl -H "Content-Type: application/json" -X POST -d '{"query" : "How much did you sell Twitch for?", "dox" : "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"}' http://127.0.0.1:5000/json-example
-
+# curl -H "Content-Type: application/json" -X POST -d '{"query" : "How much did you sell Twitch for?", "dox" : "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"}' http://127.0.0.1:5000/json-example
+# curl -H "Content-Type: application/json" -X GET -d '{"query" : "How much did you sell Twitch for?"}' http://127.0.0.1:5000/drqa
