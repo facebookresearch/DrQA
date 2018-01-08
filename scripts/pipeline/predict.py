@@ -25,7 +25,7 @@ console.setFormatter(fmt)
 logger.addHandler(console)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('dataset', type=str)
+# parser.add_argument('dataset', type=str)
 parser.add_argument('--out-dir', type=str, default='/tmp',
                     help=("Directory to write prediction file to "
                           "(<dataset>-<model>-pipeline.preds)"))
@@ -102,30 +102,30 @@ DrQA = pipeline.DrQA(
 # ------------------------------------------------------------------------------
 
 
-logger.info('Loading queries from %s' % args.dataset)
-queries = []
-for line in open(args.dataset):
-    data = json.loads(line)
-    queries.append(data['question'])
+# logger.info('Loading queries from %s' % args.dataset)
+# queries = []
+# for line in open(args.dataset):
+#     data = json.loads(line)
+#     queries.append(data['question'])
 
-model = os.path.splitext(os.path.basename(args.reader_model or 'default'))[0]
-basename = os.path.splitext(os.path.basename(args.dataset))[0]
-outfile = os.path.join(args.out_dir, basename + '-' + model + '-pipeline.preds')
+# model = os.path.splitext(os.path.basename(args.reader_model or 'default'))[0]
+# basename = os.path.splitext(os.path.basename(args.dataset))[0]
+# outfile = os.path.join(args.out_dir, basename + '-' + model + '-pipeline.preds')
 
-logger.info('Writing results to %s' % outfile)
-with open(outfile, 'w') as f:
-    batches = [queries[i: i + args.predict_batch_size]
-               for i in range(0, len(queries), args.predict_batch_size)]
-    for i, batch in enumerate(batches):
-        logger.info(
-            '-' * 25 + ' Batch %d/%d ' % (i + 1, len(batches)) + '-' * 25
-        )
-        predictions = DrQA.process_batch(
-            batch,
-            n_docs=args.n_docs,
-            top_n=args.top_n,
-        )
-        for p in predictions:
-            f.write(json.dumps(p) + '\n')
+# logger.info('Writing results to %s' % outfile)
+# with open(outfile, 'w') as f:
+#     batches = [queries[i: i + args.predict_batch_size]
+#                for i in range(0, len(queries), args.predict_batch_size)]
+#     for i, batch in enumerate(batches):
+#         logger.info(
+#             '-' * 25 + ' Batch %d/%d ' % (i + 1, len(batches)) + '-' * 25
+#         )
+#         predictions = DrQA.process_batch(
+#             batch,
+#             n_docs=args.n_docs,
+#             top_n=args.top_n,
+#         )
+#         for p in predictions:
+#             f.write(json.dumps(p) + '\n')
 
-logger.info('Total time: %.2f' % (time.time() - t0))
+# logger.info('Total time: %.2f' % (time.time() - t0))
