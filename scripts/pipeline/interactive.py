@@ -76,40 +76,52 @@ DrQA = pipeline.DrQA(
 # ------------------------------------------------------------------------------
 
 
-def process(question, candidates=None, top_n=1, n_docs=5):
+def process(question, dox, candidates=None, top_n=3, n_docs=5):
     predictions = DrQA.process(
-        question, candidates, top_n, n_docs, return_context=True
+        question, dox, candidates, top_n, n_docs, return_context=False #turn to true for context (highlighted...)
     )
-    table = prettytable.PrettyTable(
-        ['Rank', 'Answer', 'Doc', 'Answer Score', 'Doc Score']
-    )
-    for i, p in enumerate(predictions, 1):
-        table.add_row([i, p['span'], p['doc_id'],
-                       '%.5g' % p['span_score'],
-                       '%.5g' % p['doc_score']])
-    print('Top Predictions:')
-    print(table)
-    print('\nContexts:')
-    for p in predictions:
-        text = p['context']['text']
-        start = p['context']['start']
-        end = p['context']['end']
-        output = (text[:start] +
-                  colored(text[start: end], 'green', attrs=['bold']) +
-                  text[end:])
-        print('[ Doc = %s ]' % p['doc_id'])
-        print(output + '\n')
+    return predictions
 
 
-banner = """
-Interactive DrQA
->> process(question, candidates=None, top_n=1, n_docs=5)
->> usage()
-"""
+
+    # table = prettytable.PrettyTable(
+    #     ['Rank', 'Answer', 'Doc', 'Answer Score'] #, 'Doc Score']
+    # )
+    # for i, p in enumerate(predictions, 1):
+    #     table.add_row([i, p['span'], p['doc_id'],
+    #                    '%.5g' % p['span_score']]) #,
+    #                    # '%.5g' % p['doc_score']])
+    # print('Top Predictions:')
+    # print(table)
 
 
-def usage():
-    print(banner)
 
 
-code.interact(banner=banner, local=locals())
+
+
+    # print('\nContexts:')
+    # for p in predictions:
+    #     text = p['context']['text'] # b/c context false
+    #     start = p['context']['start']
+    #     end = p['context']['end']
+    #     output = (text[:start] +
+    #               colored(text[start: end], 'green', attrs=['bold']) +
+    #               text[end:])
+    #     print('[ Doc = %s ]' % p['doc_id'])
+    #     print(output + '\n')
+    # return str(table)
+
+# banner = """
+# Interactive DrQA
+# >> process(question, candidates=None, top_n=1, n_docs=5)
+# >> usage()
+# """
+
+
+# def usage():
+#     print(banner)
+
+
+# code.interact(banner=banner, local=locals())
+# dox = "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"
+# print(process("Twitch for how much?", dox, top_n = 3))
