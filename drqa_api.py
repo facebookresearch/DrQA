@@ -15,7 +15,8 @@ def drqa():
     return jsonify(output)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+#    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
 
 # curl -H "Content-Type: application/json" -X POST -d '{"query" : "How much did you sell Twitch for?", "dox" : "https://molly.com/q?q=how%20should%20we%20decide%20which%20features%20to%20build?&id=7606"}' http://127.0.0.1:5000/json-example
 # curl -H "Content-Type: application/json" -X GET -d '{"query" : "How much did you sell Twitch for?"}' http://127.0.0.1:5000/drqa
