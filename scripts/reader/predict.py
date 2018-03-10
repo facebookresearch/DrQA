@@ -60,10 +60,10 @@ else:
     logger.info('Running on CPU only.')
 
 predictor = Predictor(
-    args.model,
-    args.tokenizer,
-    args.embedding_file,
-    args.num_workers,
+    model=args.model,
+    tokenizer=args.tokenizer,
+    embedding_file=args.embedding_file,
+    num_workers=args.num_workers,
 )
 if args.cuda:
     predictor.cuda()
