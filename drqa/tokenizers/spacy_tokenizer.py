@@ -27,7 +27,7 @@ class SpacyTokenizer(Tokenizer):
         nlp_kwargs = {'parser': False}
         if not {'lemma', 'pos', 'ner'} in self.annotators:
             nlp_kwargs['tagger'] = False
-        if not {'ner'} & self.annotators:
+        if not {'ner'} in self.annotators:
             nlp_kwargs['entity'] = False
         self.nlp = spacy.load(model, **nlp_kwargs)
 
@@ -37,7 +37,7 @@ class SpacyTokenizer(Tokenizer):
         tokens = self.nlp.tokenizer(clean_text)
         if {'lemma', 'pos', 'ner'} in self.annotators:
             self.nlp.tagger(tokens)
-        if {'ner'} & self.annotators:
+        if {'ner'} in self.annotators:
             self.nlp.entity(tokens)
 
         data = []
