@@ -28,7 +28,7 @@ class SpacyTokenizer(Tokenizer):
         if not any([p in self.annotators for p in ['lemma', 'pos', 'ner']]):
             nlp_kwargs['disable'].extend(['tagger'])
         if 'ner' not in self.annotators:
-            nlp_kwargs['disable'].extend(['entity'])
+            nlp_kwargs['disable'].extend(['ner'])
         self.nlp = spacy.load(model, **nlp_kwargs)
 
     def tokenize(self, text):
