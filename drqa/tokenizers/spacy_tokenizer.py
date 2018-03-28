@@ -24,11 +24,11 @@ class SpacyTokenizer(Tokenizer):
         """
         model = kwargs.get('model', 'en')
         self.annotators = copy.deepcopy(kwargs.get('annotators', set()))
-        nlp_kwargs = {'parser': False}
+        nlp_kwargs = {'disable': ['parser']}
         if not any([p in self.annotators for p in ['lemma', 'pos', 'ner']]):
-            nlp_kwargs['tagger'] = False
+            nlp_kwargs['disable'].extend(['tagger'])
         if 'ner' not in self.annotators:
-            nlp_kwargs['entity'] = False
+            nlp_kwargs['disable'].extend(['entity'])
         self.nlp = spacy.load(model, **nlp_kwargs)
 
     def tokenize(self, text):
