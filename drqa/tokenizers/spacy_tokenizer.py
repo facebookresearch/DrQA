@@ -25,7 +25,7 @@ class SpacyTokenizer(Tokenizer):
         model = kwargs.get('model', 'en')
         self.annotators = copy.deepcopy(kwargs.get('annotators', set()))
         nlp_kwargs = {'parser': False}
-        if ('lemma' not in self.annotators) and ('pos' not in self.annotators) and ('ner' not in self.annotators):
+        if not any([p in self.annotators for p in ['lemma', 'pos', 'ner']]):
             nlp_kwargs['tagger'] = False
         if 'ner' not in self.annotators:
             nlp_kwargs['entity'] = False
@@ -35,7 +35,7 @@ class SpacyTokenizer(Tokenizer):
         # We don't treat new lines as tokens.
         clean_text = text.replace('\n', ' ')
         tokens = self.nlp.tokenizer(clean_text)
-        if ('lemma' in self.annotators) or ('pos' in self.annotators) or('ner' in self.annotators) :
+        if any([p in self.annotators for p in ['lemma', 'pos', 'ner']]):
             self.nlp.tagger(tokens)
         if 'ner' in self.annotators:
             self.nlp.entity(tokens)
