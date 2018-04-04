@@ -22,7 +22,7 @@ Some additional directory creations
 
 ```bash
 mkdir $SCRATCH/models
-mkdir $SCRATCH/DrQA/output
+mkdir $SCRATCH/output
 ```
 
 Test corenlp
@@ -44,5 +44,7 @@ sbatch preprocess.s
 
 Train model
 ```bash
-sbatch preprocess.s
+sbatch train.s
 ```
+
+You can see the output of runs in output folder
