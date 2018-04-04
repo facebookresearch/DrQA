@@ -21,6 +21,6 @@ mkdir -p $RUNDIR
 SRCDIR=$SCRATCH/DrQA/scripts/pipeline/
 cd $RUNDIR
 export CLASSPATH=$CLASSPATH:$SCRATCH/data/corenlp/*
-$HOME/anaconda3/bin/python $SRCDIR/interactive.py < $SCRATCH/input.txt 
+$HOME/anaconda3/bin/python $SRCDIR/interactive.py < $SCRATCH/DrQA/input.txt 
 
 
