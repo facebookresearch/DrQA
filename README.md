@@ -27,8 +27,8 @@ Download data
 Some additional directory creations
 
 ```bash
-mkdir $SCRATCH/models
-mkdir $SCRATCH/output
+mkdir models
+mkdir output
 ```
 
 Test corenlp
@@ -54,4 +54,4 @@ Train model
 sbatch train.s
 ```
 
-You can see the output of runs in output folder
+You can see the output of runs in output as well as models folder
