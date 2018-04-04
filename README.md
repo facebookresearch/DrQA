@@ -4,7 +4,12 @@
 
 Install anaconda python in $HOME/anaconda3
 
-Download DrQA repo in $SCRATCH/DrQA
+Download DrQA repo in $SCRATCH/DrQA and install DrQA
+```bash
+cd $SCRATCH
+git clone https://github.com/jpatrickpark/DrQA.git
+cd DrQA; pip install -r requirements.txt; python setup.py develop
+```
 
 Install CoreNLP in $SCRATCH/data/corenlp
 
@@ -16,6 +21,7 @@ Download data
 
 ```bash
 ./download.sh
+./download_glove.sh
 ```
 
 Some additional directory creations
@@ -40,6 +46,7 @@ sbatch interactive.s
 Create preprocessed input data
 ```bash
 sbatch preprocess.s
+sbatch preprocess_dev.s
 ```
 
 Train model
