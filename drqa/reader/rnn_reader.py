@@ -15,6 +15,23 @@ from . import layers
 # Network
 # ------------------------------------------------------------------------------
 
+class CustomLSTM(nn.Module):
+    def __init__(self, input_size, hidden_size):
+        super(CustomLSTM, self).__init__()
+        #self.num_layers = num_layers
+        self.rnn = nn.LSTM(input_size, hidden_size, num_layers=1, bidirectional=True)
+
+    def forward(self, x):
+        x = x.transpose(0,1)
+        #outputs = [x]
+        #rnn_input = x
+        output = self.rnn(x)[0]
+        output = output.transpose(0, 1)
+        return output.contiguous()
+
+
+        #pass
+            
 
 class RnnDocReader(nn.Module):
     RNN_TYPES = {'lstm': nn.LSTM, 'gru': nn.GRU, 'rnn': nn.RNN}
@@ -39,28 +56,34 @@ class RnnDocReader(nn.Module):
             doc_input_size += args.embedding_dim
 
         # RNN document encoder
-        self.doc_rnn = layers.StackedBRNN(
-            input_size=doc_input_size,
-            hidden_size=args.hidden_size,
-            num_layers=args.doc_layers,
-            dropout_rate=args.dropout_rnn,
-            dropout_output=args.dropout_rnn_output,
-            concat_layers=args.concat_rnn_layers,
-            rnn_type=self.RNN_TYPES[args.rnn_type],
-            padding=args.rnn_padding,
-        )
+        if args.rnn_type == 'custom_lstm':
+            self.doc_rnn = CustomLSTM(doc_input_size, args.hidden_size)
+        else:
+            self.doc_rnn = layers.StackedBRNN(
+                input_size=doc_input_size,
+                hidden_size=args.hidden_size,
+                num_layers=args.doc_layers,
+                dropout_rate=args.dropout_rnn,
+                dropout_output=args.dropout_rnn_output,
+                concat_layers=args.concat_rnn_layers,
+                rnn_type=self.RNN_TYPES[args.rnn_type],
+                padding=args.rnn_padding,
+            )
 
         # RNN question encoder
-        self.question_rnn = layers.StackedBRNN(
-            input_size=args.embedding_dim,
-            hidden_size=args.hidden_size,
-            num_layers=args.question_layers,
-            dropout_rate=args.dropout_rnn,
-            dropout_output=args.dropout_rnn_output,
-            concat_layers=args.concat_rnn_layers,
-            rnn_type=self.RNN_TYPES[args.rnn_type],
-            padding=args.rnn_padding,
-        )
+        if args.rnn_type == 'custom_lstm':
+            self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size)
+        else:
+            self.question_rnn = layers.StackedBRNN(
+                input_size=args.embedding_dim,
+                hidden_size=args.hidden_size,
+                num_layers=args.question_layers,
+                dropout_rate=args.dropout_rnn,
+                dropout_output=args.dropout_rnn_output,
+                concat_layers=args.concat_rnn_layers,
+                rnn_type=self.RNN_TYPES[args.rnn_type],
+                padding=args.rnn_padding,
+            )
 
         # Output sizes of rnn encoders
         doc_hidden_size = 2 * args.hidden_size
@@ -118,11 +141,15 @@ class RnnDocReader(nn.Module):
         if self.args.num_features > 0:
             drnn_input.append(x1_f)
 
-        # Encode document with RNN
-        doc_hiddens = self.doc_rnn(torch.cat(drnn_input, 2), x1_mask)
+        if self.args.rnn_type == 'custom_lstm':
+            doc_hiddens = self.doc_rnn(torch.cat(drnn_input, 2))
+            question_hiddens = self.question_rnn(x2_emb)
+        else:
+            # Encode document with RNN
+            doc_hiddens = self.doc_rnn(torch.cat(drnn_input, 2), x1_mask)
 
-        # Encode question with RNN + merge hiddens
-        question_hiddens = self.question_rnn(x2_emb, x2_mask)
+            # Encode question with RNN + merge hiddens
+            question_hiddens = self.question_rnn(x2_emb, x2_mask)
         if self.args.question_merge == 'avg':
             q_merge_weights = layers.uniform_weights(question_hiddens, x2_mask)
         elif self.args.question_merge == 'self_attn':
