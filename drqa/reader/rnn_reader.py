@@ -17,10 +17,10 @@ from . import tcn
 # ------------------------------------------------------------------------------
 
 class CustomLSTM(nn.Module):
-    def __init__(self, input_size, hidden_size, bidirectional):
+    def __init__(self, input_size, hidden_size, num_layers, bidirectional):
         super(CustomLSTM, self).__init__()
         #self.num_layers = num_layers
-        self.rnn = nn.LSTM(input_size, hidden_size, num_layers=1, bidirectional=bidirectional)
+        self.rnn = nn.LSTM(input_size, hidden_size, num_layers=num_layers, bidirectional=bidirectional)
 
     def forward(self, x):
         """x here is one token... no? does it take a batch of tokens"""
@@ -43,11 +43,11 @@ class CustomLSTM(nn.Module):
 
 class TCN(nn.Module):
 
-    def __init__(self, input_size, output_size,
-                 kernel_size=2, dropout=0.3, emb_dropout=0.1, tied_weights=False):
+    def __init__(self, input_size, output_size, num_levels, dropout=0.3,
+                 kernel_size=2):
         super(TCN, self).__init__()
-        num_channels = [output_size]
-        self.tcn = tcn.TemporalConvNet(input_size, num_channels, kernel_size)
+        num_channels = [output_size] * num_levels
+        self.tcn = tcn.TemporalConvNet(input_size, num_channels, kernel_size, dropout=dropout)
 
     def forward(self, x):
         """Input to tcn ought to have dimension (N, C_in, L_in)"""
@@ -80,11 +80,11 @@ class RnnDocReader(nn.Module):
             doc_input_size += args.embedding_dim
 
         if args.rnn_type == 'custom_lstm':
-            self.doc_rnn = CustomLSTM(doc_input_size, args.hidden_size, args.bidirectional)
-            self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size, args.bidirectional)
+            self.doc_rnn = CustomLSTM(doc_input_size, args.hidden_size, args.doc_layers, args.bidirectional)
+            self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size, args.question_layers, args.bidirectional)
         elif args.rnn_type == 'tcn':
-            self.doc_rnn = TCN(doc_input_size, args.hidden_size)
-            self.question_rnn = TCN(args.embedding_dim, args.hidden_size)
+            self.doc_rnn = TCN(doc_input_size, args.hidden_size, args.doc_layers, args.dropout_rnn, args.tcn_filter_size)
+            self.question_rnn = TCN(args.embedding_dim, args.hidden_size, args.question_layers, args.dropout_rnn, args.tcn_filter_size)
         else:
             # RNN document encoder
             self.doc_rnn = layers.StackedBRNN(

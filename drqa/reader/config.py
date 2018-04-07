@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 # Index of arguments concerning the core model architecture
 MODEL_ARCHITECTURE = {
     'model_type', 'embedding_dim', 'hidden_size', 'doc_layers',
-    'question_layers', 'rnn_type', 'bidirectional','concat_rnn_layers', 'question_merge',
+    'question_layers', 'rnn_type', 'bidirectional', 'tcn_filter_size', 
+    'concat_rnn_layers', 'question_merge',
     'use_qemb', 'use_in_question', 'use_pos', 'use_ner', 'use_lemma', 'use_tf'
 }
 
@@ -48,7 +49,9 @@ def add_model_args(parser):
     model.add_argument('--rnn-type', type=str, default='lstm',
                        help='RNN type: LSTM, GRU, or RNN')
     model.add_argument('--bidirectional', type='bool', default=True,
-                       help='use bidirectional lstm?')
+                       help='Use bidirectional architecture')
+    model.add_argument('--tcn-filter-size', type=int, default=2,
+                       help='Filter size to use in TCN')
 
     # Model specific details
     detail = parser.add_argument_group('DrQA Reader Model Details')
