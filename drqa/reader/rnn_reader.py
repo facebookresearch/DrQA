@@ -8,6 +8,7 @@
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from . import layers
 from . import tcn
 
@@ -17,26 +18,36 @@ from . import tcn
 # ------------------------------------------------------------------------------
 
 class CustomLSTM(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, bidirectional):
+    def __init__(self, input_size, hidden_size, num_layers, bidirectional, dropout_rate, dropout_output):
         super(CustomLSTM, self).__init__()
         #self.num_layers = num_layers
-        self.rnn = nn.LSTM(input_size, hidden_size, num_layers=num_layers, bidirectional=bidirectional)
+        #self.rnn = nn.LSTM(input_size, hidden_size, num_layers=num_layers, bidirectional=bidirectional)
+        self.rnns = nn.ModuleList()
+        self.dropout_rate = dropout_rate
+        self.dropout_output = dropout_output
+        self.num_layers = num_layers
+        for i in range(num_layers):
+            if i==0:
+                pass
+            elif bidirectional:
+                input_size = 2 * hidden_size
+            else:
+                input_size = hidden_size
+            self.rnns.append(nn.LSTM(input_size, hidden_size, num_layers=num_layers, bidirectional=bidirectional))
+            
 
     def forward(self, x):
         """x here is one token... no? does it take a batch of tokens"""
-        #print("start")
-        #print(x.shape)
         x = x.transpose(0,1)
-        #print("after transpose")
-        #print(x.shape)
-        #outputs = [x]
-        #rnn_input = x
-        output = self.rnn(x)[0]
-        #print("output")
-        #print(output.shape)
+        outputs = [x]
+        for i in range(self.num_layers):
+            rnn_input = outputs[-1]
+            if self.dropout_rate > 0:
+                rnn_input = F.dropout(rnn_input, p=self.dropout_rate, training=self.training)
+            rnn_output = self.rnns[i](rnn_input)[0]
+            outputs.append(rnn_output)
+        output = outputs[-1]
         output = output.transpose(0, 1)
-        #print("end")
-        #print(output.shape)
         return output.contiguous()
 
 
@@ -80,8 +91,10 @@ class RnnDocReader(nn.Module):
             doc_input_size += args.embedding_dim
 
         if args.rnn_type == 'custom_lstm':
-            self.doc_rnn = CustomLSTM(doc_input_size, args.hidden_size, args.doc_layers, args.bidirectional)
-            self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size, args.question_layers, args.bidirectional)
+            self.doc_rnn = CustomLSTM(doc_input_size, args.hidden_size, args.doc_layers, 
+                                      args.bidirectional, args.dropout_rnn, args.dropout_rnn_output)
+            self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size, args.question_layers, 
+                                           args.bidirectional, args.dropout_rnn, args.dropout_rnn_output)
         elif args.rnn_type == 'tcn':
             self.doc_rnn = TCN(doc_input_size, args.hidden_size, args.doc_layers, args.dropout_rnn, args.tcn_filter_size)
             self.question_rnn = TCN(args.embedding_dim, args.hidden_size, args.question_layers, args.dropout_rnn, args.tcn_filter_size)
