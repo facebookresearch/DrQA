@@ -8,7 +8,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=jp.park@nyu.edu
 #SBATCH --output=output/train_%j.out
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
   
 module purge
 module load cuda/9.0.176

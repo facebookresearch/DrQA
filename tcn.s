@@ -21,6 +21,4 @@ mkdir -p $RUNDIR
 SRCDIR=$SCRATCH/DrQA/scripts/reader/
 cd $RUNDIR
 export CLASSPATH=$CLASSPATH:$SCRATCH/data/corenlp/*
-$HOME/anaconda3/bin/python $SRCDIR/train.py --model-dir=$SCRATCH/DrQA/models --rnn-type='custom_lstm' --concat-rnn-layers=False
-
-
+$HOME/anaconda3/bin/python $SRCDIR/train.py --model-dir=$SCRATCH/DrQA/models --rnn-type='tcn' --concat-rnn-layers=False --bidirectional=False

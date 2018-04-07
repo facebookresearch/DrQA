@@ -9,6 +9,7 @@
 import torch
 import torch.nn as nn
 from . import layers
+from . import tcn
 
 
 # ------------------------------------------------------------------------------
@@ -16,21 +17,44 @@ from . import layers
 # ------------------------------------------------------------------------------
 
 class CustomLSTM(nn.Module):
-    def __init__(self, input_size, hidden_size):
+    def __init__(self, input_size, hidden_size, bidirectional):
         super(CustomLSTM, self).__init__()
         #self.num_layers = num_layers
-        self.rnn = nn.LSTM(input_size, hidden_size, num_layers=1, bidirectional=True)
+        self.rnn = nn.LSTM(input_size, hidden_size, num_layers=1, bidirectional=bidirectional)
 
     def forward(self, x):
+        """x here is one token... no? does it take a batch of tokens"""
+        #print("start")
+        #print(x.shape)
         x = x.transpose(0,1)
+        #print("after transpose")
+        #print(x.shape)
         #outputs = [x]
         #rnn_input = x
         output = self.rnn(x)[0]
+        #print("output")
+        #print(output.shape)
         output = output.transpose(0, 1)
+        #print("end")
+        #print(output.shape)
         return output.contiguous()
 
 
-        #pass
+
+class TCN(nn.Module):
+
+    def __init__(self, input_size, output_size,
+                 kernel_size=2, dropout=0.3, emb_dropout=0.1, tied_weights=False):
+        super(TCN, self).__init__()
+        num_channels = [output_size]
+        self.tcn = tcn.TemporalConvNet(input_size, num_channels, kernel_size)
+
+    def forward(self, x):
+        """Input to tcn ought to have dimension (N, C_in, L_in)"""
+        x = x.transpose(1, 2)
+        y = self.tcn(x)
+        output = y.transpose(1, 2)
+        return output.contiguous()
             
 
 class RnnDocReader(nn.Module):
@@ -55,10 +79,14 @@ class RnnDocReader(nn.Module):
         if args.use_qemb:
             doc_input_size += args.embedding_dim
 
-        # RNN document encoder
         if args.rnn_type == 'custom_lstm':
-            self.doc_rnn = CustomLSTM(doc_input_size, args.hidden_size)
+            self.doc_rnn = CustomLSTM(doc_input_size, args.hidden_size, args.bidirectional)
+            self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size, args.bidirectional)
+        elif args.rnn_type == 'tcn':
+            self.doc_rnn = TCN(doc_input_size, args.hidden_size)
+            self.question_rnn = TCN(args.embedding_dim, args.hidden_size)
         else:
+            # RNN document encoder
             self.doc_rnn = layers.StackedBRNN(
                 input_size=doc_input_size,
                 hidden_size=args.hidden_size,
@@ -69,11 +97,7 @@ class RnnDocReader(nn.Module):
                 rnn_type=self.RNN_TYPES[args.rnn_type],
                 padding=args.rnn_padding,
             )
-
-        # RNN question encoder
-        if args.rnn_type == 'custom_lstm':
-            self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size)
-        else:
+            # RNN question encoder
             self.question_rnn = layers.StackedBRNN(
                 input_size=args.embedding_dim,
                 hidden_size=args.hidden_size,
@@ -86,8 +110,12 @@ class RnnDocReader(nn.Module):
             )
 
         # Output sizes of rnn encoders
-        doc_hidden_size = 2 * args.hidden_size
-        question_hidden_size = 2 * args.hidden_size
+        if args.bidirectional:
+            doc_hidden_size = 2 * args.hidden_size
+            question_hidden_size = 2 * args.hidden_size
+        else:
+            doc_hidden_size = args.hidden_size
+            question_hidden_size = args.hidden_size
         if args.concat_rnn_layers:
             doc_hidden_size *= args.doc_layers
             question_hidden_size *= args.question_layers
@@ -142,6 +170,9 @@ class RnnDocReader(nn.Module):
             drnn_input.append(x1_f)
 
         if self.args.rnn_type == 'custom_lstm':
+            doc_hiddens = self.doc_rnn(torch.cat(drnn_input, 2))
+            question_hiddens = self.question_rnn(x2_emb)
+        elif self.args.rnn_type == 'tcn':
             doc_hiddens = self.doc_rnn(torch.cat(drnn_input, 2))
             question_hiddens = self.question_rnn(x2_emb)
         else:
