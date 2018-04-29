@@ -8,7 +8,9 @@
 
 import torch
 import torch.nn as nn
+from torch.autograd import Variable
 import torch.nn.functional as F
+import numpy as np
 from . import layers
 from . import tcn
 
@@ -55,16 +57,33 @@ class CustomLSTM(nn.Module):
 class TCN(nn.Module):
 
     def __init__(self, input_size, output_size, num_levels, dropout=0.3,
-                 kernel_size=2):
+                 kernel_size=2, bidirectional=False):
         super(TCN, self).__init__()
         num_channels = [output_size] * num_levels
         self.tcn = tcn.TemporalConvNet(input_size, num_channels, kernel_size, dropout=dropout)
+        self.bidirectional = bidirectional
+        if self.bidirectional:
+            self.reverse = tcn.TemporalConvNet(input_size, num_channels, kernel_size, dropout=dropout)
 
     def forward(self, x):
-        """Input to tcn ought to have dimension (N, C_in, L_in)"""
+        #print("x: ",x.shape)
         x = x.transpose(1, 2)
+        #print("x after transpose: ",x.shape)
         y = self.tcn(x)
+        #print("y: ",y.shape)
         output = y.transpose(1, 2)
+        #print("y after transpose: ",output.shape)
+        if self.bidirectional:
+            #print("x shape:",x.shape)
+            x_reverse_np = np.flip(x.data.cpu().numpy(),2).copy() 
+            x_reverse_torch = Variable(torch.from_numpy(x_reverse_np)).cuda()
+            #print("flip 2: ", x_reverse_torch.shape)
+            y2 = self.reverse(x_reverse_torch)
+            #print("y2: ", y2.shape)
+            y2_reverse_np = np.flip(y2.data.cpu().numpy(),2).copy() 
+            y2_reverse_torch = Variable(torch.from_numpy(y2_reverse_np)).cuda()
+            output = torch.cat((output, y2_reverse_torch.transpose(1,2)), 2)
+            #print("concatenated output: ", output.shape)
         return output.contiguous()
             
 
@@ -96,8 +115,8 @@ class RnnDocReader(nn.Module):
             self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size, args.question_layers, 
                                            args.bidirectional, args.dropout_rnn, args.dropout_rnn_output)
         elif args.rnn_type == 'tcn':
-            self.doc_rnn = TCN(doc_input_size, args.hidden_size, args.doc_layers, args.dropout_rnn, args.tcn_filter_size)
-            self.question_rnn = TCN(args.embedding_dim, args.hidden_size, args.question_layers, args.dropout_rnn, args.tcn_filter_size)
+            self.doc_rnn = TCN(doc_input_size, args.hidden_size, args.doc_layers, args.dropout_rnn, args.tcn_filter_size, args.bidirectional)
+            self.question_rnn = TCN(args.embedding_dim, args.hidden_size, args.question_layers, args.dropout_rnn, args.tcn_filter_size, args.bidirectional)
         else:
             # RNN document encoder
             self.doc_rnn = layers.StackedBRNN(
