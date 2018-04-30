@@ -39,7 +39,6 @@ class CustomLSTM(nn.Module):
             
 
     def forward(self, x):
-        """x here is one token... no? does it take a batch of tokens"""
         x = x.transpose(0,1)
         outputs = [x]
         for i in range(self.num_layers):
@@ -66,24 +65,15 @@ class TCN(nn.Module):
             self.reverse = tcn.TemporalConvNet(input_size, num_channels, kernel_size, dropout=dropout)
 
     def forward(self, x):
-        #print("x: ",x.shape)
         x = x.transpose(1, 2)
-        #print("x after transpose: ",x.shape)
         y = self.tcn(x)
-        #print("y: ",y.shape)
         output = y.transpose(1, 2)
-        #print("y after transpose: ",output.shape)
         if self.bidirectional:
-            #print("x shape:",x.shape)
-            x_reverse_np = np.flip(x.data.cpu().numpy(),2).copy() 
-            x_reverse_torch = Variable(torch.from_numpy(x_reverse_np)).cuda()
-            #print("flip 2: ", x_reverse_torch.shape)
+            indices = Variable(torch.LongTensor(list(reversed(range(x.shape[2]))))).cuda()
+            x_reverse_torch = torch.index_select(x, 2, indices)
             y2 = self.reverse(x_reverse_torch)
-            #print("y2: ", y2.shape)
-            y2_reverse_np = np.flip(y2.data.cpu().numpy(),2).copy() 
-            y2_reverse_torch = Variable(torch.from_numpy(y2_reverse_np)).cuda()
+            y2_reverse_torch = torch.index_select(y2, 2, indices)
             output = torch.cat((output, y2_reverse_torch.transpose(1,2)), 2)
-            #print("concatenated output: ", output.shape)
         return output.contiguous()
             
 
