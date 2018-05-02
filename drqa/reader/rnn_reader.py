@@ -63,16 +63,18 @@ class TCN(nn.Module):
         self.bidirectional = bidirectional
         if self.bidirectional:
             self.reverse = tcn.TemporalConvNet(input_size, num_channels, kernel_size, dropout=dropout)
+            self.indices = Variable(torch.LongTensor([0])).cuda() #dummy variable for initializing
 
     def forward(self, x):
         x = x.transpose(1, 2)
         y = self.tcn(x)
         output = y.transpose(1, 2)
         if self.bidirectional:
-            indices = Variable(torch.LongTensor(list(reversed(range(x.shape[2]))))).cuda()
-            x_reverse_torch = torch.index_select(x, 2, indices)
+            del self.indices
+            self.indices = Variable(torch.LongTensor(list(reversed(range(x.shape[2]))))).cuda()
+            x_reverse_torch = torch.index_select(x, 2, self.indices)
             y2 = self.reverse(x_reverse_torch)
-            y2_reverse_torch = torch.index_select(y2, 2, indices)
+            y2_reverse_torch = torch.index_select(y2, 2, self.indices)
             output = torch.cat((output, y2_reverse_torch.transpose(1,2)), 2)
         return output.contiguous()
             
