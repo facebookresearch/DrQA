@@ -46,19 +46,29 @@ class TemporalBlock(nn.Module):
 
 
 class TemporalConvNet(nn.Module):
-    def __init__(self, num_inputs, num_channels, kernel_size=2, dropout=0.2, reverse=False):
+    def __init__(self, num_inputs, num_channels, kernel_size=2, dropout=0.2, concat_layers=False):
         super(TemporalConvNet, self).__init__()
-        layers = []
-        num_levels = len(num_channels)
-        for i in range(num_levels):
+        self.layers = []
+        self.concat_layers = concat_layers
+        self.num_levels = len(num_channels)
+        for i in range(self.num_levels):
             dilation_size = 2 ** i
             in_channels = num_inputs if i == 0 else num_channels[i-1]
             out_channels = num_channels[i]
-            layers += [TemporalBlock(in_channels, out_channels, kernel_size, stride=1, dilation=dilation_size,
+            self.layers += [TemporalBlock(in_channels, out_channels, kernel_size, stride=1, dilation=dilation_size,
                                      padding=(kernel_size-1) * dilation_size, dropout=dropout)]
 
-        self.network = nn.Sequential(*layers)
+        self.network = nn.Sequential(*self.layers)
         #self.network.cuda()
 
     def forward(self, x):
-        return self.network(x)
+        if not self.concat_layers:
+            return self.network(x)
+        outputs = [x]
+        for layer in self.layers:
+            tcn_input = outputs[-1]
+            tcn_output = layer(tcn_input)#[0]
+            outputs.append(tcn_output)
+        #if self.concat_layers:
+        output = torch.cat(outputs[1:], 1)
+        return output
