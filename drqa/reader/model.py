@@ -239,15 +239,16 @@ class DocReader(object):
 
         # Reset fixed embeddings to original value
         if self.args.tune_partial > 0:
-            # Embeddings to fix are indexed after the special + N tuned words
-            offset = self.args.tune_partial + self.word_dict.START
             if self.parallel:
                 embedding = self.network.module.embedding.weight.data
                 fixed_embedding = self.network.module.fixed_embedding
             else:
                 embedding = self.network.embedding.weight.data
                 fixed_embedding = self.network.fixed_embedding
-            if offset < embedding.size(0):
+
+            # Embeddings to fix are the last indices
+            offset = embedding.size(0) - fixed_embedding.size(0)
+            if offset >= 0:
                 embedding[offset:] = fixed_embedding
 
     # --------------------------------------------------------------------------
