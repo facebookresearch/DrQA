@@ -68,7 +68,9 @@ class StackedBRNN(nn.Module):
     def _forward_unpadded(self, x, x_mask):
         """Faster encoding that ignores any padding."""
         # Transpose batch and sequence dims
+        #print("before transpose: ", x.shape)
         x = x.transpose(0, 1)
+        #print("after transpose: ", x.shape)
 
         # Encode all layers
         outputs = [x]
@@ -87,6 +89,9 @@ class StackedBRNN(nn.Module):
         # Concat hidden layers
         if self.concat_layers:
             output = torch.cat(outputs[1:], 2)
+            #for each in outputs:
+                #print("outputs shape:", each.shape)
+            #print("concat_layers: ",output.shape)
         else:
             output = outputs[-1]
 

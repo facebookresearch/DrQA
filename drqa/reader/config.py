@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 MODEL_ARCHITECTURE = {
     'model_type', 'embedding_dim', 'hidden_size', 'doc_layers',
     'question_layers', 'rnn_type', 'bidirectional', 'tcn_filter_size', 
-    'concat_rnn_layers', 'question_merge',
+    'concat_rnn_layers', 'question_merge', "norm", 'affine',
     'use_qemb', 'use_in_question', 'use_pos', 'use_ner', 'use_lemma', 'use_tf'
 }
 
@@ -59,6 +59,10 @@ def add_model_args(parser):
                         help='Combine hidden states from each encoding layer')
     detail.add_argument('--question-merge', type=str, default='self_attn',
                         help='The way of computing the question representation')
+    detail.add_argument('--norm', type=str, default='weight',
+                        help='Weight norm?')
+    detail.add_argument('--affine', type='bool', default=False,
+                        help='Learnable parameter in layernorm')
     detail.add_argument('--use-qemb', type='bool', default=True,
                         help='Whether to use weighted question embeddings')
     detail.add_argument('--use-in-question', type='bool', default=True,
