@@ -21,9 +21,7 @@ class TemporalBlock(nn.Module):
         else:
             self.conv1 = nn.Conv1d(n_inputs, n_outputs, kernel_size,
                                            stride=stride, padding=padding, dilation=dilation)
-            #self.norm1 = nn.GroupNorm(1, 1)
             self.norm1 = nn.InstanceNorm1d(n_outputs, affine=affine)
-            print("HOORAY! INSTANCENORM IS WORKING!")
 
         self.chomp1 = Chomp1d(padding)
         self.relu1 = nn.ReLU()
@@ -35,8 +33,7 @@ class TemporalBlock(nn.Module):
         else:
             self.conv2 = nn.Conv1d(n_outputs, n_outputs, kernel_size,
                                            stride=stride, padding=padding, dilation=dilation)
-            #self.norm2 = nn.GroupNorm(1, 1)
-            self.norm2 = nn.InstanceNorm1d(n_outputs, affine=affine) # is this right?
+            self.norm2 = nn.InstanceNorm1d(n_outputs, affine=affine)
         self.chomp2 = Chomp1d(padding)
         self.relu2 = nn.ReLU()
         self.dropout2 = nn.Dropout2d(dropout)
