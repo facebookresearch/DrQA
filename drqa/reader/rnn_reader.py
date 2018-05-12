@@ -107,8 +107,12 @@ class RnnDocReader(nn.Module):
             self.question_rnn = CustomLSTM(args.embedding_dim, args.hidden_size, args.question_layers, 
                                            args.bidirectional, args.dropout_rnn, args.dropout_rnn_output)
         elif args.rnn_type == 'tcn':
-            self.doc_rnn = TCN(doc_input_size, args.hidden_size, args.doc_layers, args.dropout_rnn, args.tcn_filter_size, args.bidirectional, args.concat_rnn_layers, args.norm, args.affine)
-            self.question_rnn = TCN(args.embedding_dim, args.hidden_size, args.question_layers, args.dropout_rnn, args.tcn_filter_size, args.bidirectional, args.concat_rnn_layers, args.norm, args.affine)
+            try:
+            	self.doc_rnn = TCN(doc_input_size, args.hidden_size, args.doc_layers, args.dropout_rnn, args.tcn_filter_size, args.bidirectional, args.concat_rnn_layers, args.norm, args.affine)
+            	self.question_rnn = TCN(args.embedding_dim, args.hidden_size, args.question_layers, args.dropout_rnn, args.tcn_filter_size, args.bidirectional, args.concat_rnn_layers, args.norm, args.affine)
+            except:
+            	self.doc_rnn = TCN(doc_input_size, args.hidden_size, args.doc_layers, args.dropout_rnn, args.tcn_filter_size, args.bidirectional, args.concat_rnn_layers)
+            	self.question_rnn = TCN(args.embedding_dim, args.hidden_size, args.question_layers, args.dropout_rnn, args.tcn_filter_size, args.bidirectional, args.concat_rnn_layers)
         else:
             # RNN document encoder
             self.doc_rnn = layers.StackedBRNN(
@@ -140,6 +144,7 @@ class RnnDocReader(nn.Module):
         else:
             doc_hidden_size = args.hidden_size
             question_hidden_size = args.hidden_size
+
         if args.concat_rnn_layers:
             doc_hidden_size *= args.doc_layers
             question_hidden_size *= args.question_layers
