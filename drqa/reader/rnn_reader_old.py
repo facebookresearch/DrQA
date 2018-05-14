@@ -13,9 +13,7 @@ import torch.nn.functional as F
 import numpy as np
 from . import layers
 from . import tcn
-from . import self_attention
-from .self_attention import SelfAttention
-import time
+
 
 # ------------------------------------------------------------------------------
 # Network
@@ -66,7 +64,6 @@ class TCN(nn.Module):
         if self.bidirectional:
             self.reverse = tcn.TemporalConvNet(input_size, num_channels, kernel_size, dropout=dropout, concat_layers=concat_rnn_layers, norm=norm, affine=affine)
             self.indices = Variable(torch.LongTensor([0])).cuda() #dummy variable for initializing
-        
 
     def forward(self, x):
         x = x.transpose(1, 2)
@@ -89,21 +86,6 @@ class RnnDocReader(nn.Module):
         super(RnnDocReader, self).__init__()
         # Store config
         self.args = args
-
-        self.attention = args.self_attention
-        #self.attention = True
-        #self.attention = False
-
-        self.tcn_output_dim = 256 #256, 768, 2304
-
-        if self.attention:
-            self_matching_layer_args = {
-                                            'similarity_function': 'WeightedSumProjection',
-                                            'sequence_dim': self.tcn_output_dim, 
-                                            'projection_dim': int(self.tcn_output_dim/2)
-                                        }
-            self.self_matching_layer = SelfAttention(self_matching_layer_args)
-
 
         # Word embeddings (+1 for padding)
         self.embedding = nn.Embedding(args.vocab_size,
@@ -191,8 +173,6 @@ class RnnDocReader(nn.Module):
         # Embed both document and question
         x1_emb = self.embedding(x1)
         x2_emb = self.embedding(x2)
-        #print(x1_mask)
-       
 
         # Dropout on embeddings
         if self.args.dropout_emb > 0:
@@ -212,8 +192,6 @@ class RnnDocReader(nn.Module):
         # Add manual features
         if self.args.num_features > 0:
             drnn_input.append(x1_f)
-        
-        #start_time = time.time()
 
         if self.args.rnn_type == 'custom_lstm':
             doc_hiddens = self.doc_rnn(torch.cat(drnn_input, 2))
@@ -227,12 +205,8 @@ class RnnDocReader(nn.Module):
 
             # Encode question with RNN + merge hiddens
             question_hiddens = self.question_rnn(x2_emb, x2_mask)
-        #end_time = time.time()
+
         print(doc_hiddens.size())
-        #print(end_time-start_time)
-        if self.attention:
-            x1_mask_sa = 1 - x1_mask.int()
-            doc_hiddens, self_match_weights = self.self_matching_layer(doc_hiddens, x1_mask_sa)
 
         if self.args.question_merge == 'avg':
             q_merge_weights = layers.uniform_weights(question_hiddens, x2_mask)
@@ -244,4 +218,3 @@ class RnnDocReader(nn.Module):
         start_scores = self.start_attn(doc_hiddens, question_hidden, x1_mask)
         end_scores = self.end_attn(doc_hiddens, question_hidden, x1_mask)
         return start_scores, end_scores
-

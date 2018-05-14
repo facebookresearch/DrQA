@@ -26,6 +26,7 @@ def vectorize(ex, model, single_answer=False):
     else:
         features = None
 
+
     # f_{exact_match}
     if args.use_in_question:
         q_words_cased = {w for w in ex['question']}

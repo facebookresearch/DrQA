@@ -88,14 +88,9 @@ class RnnDocReader(nn.Module):
     def __init__(self, args, normalize=True):
         super(RnnDocReader, self).__init__()
         # Store config
-        self.args = args
-
         self.attention = args.self_attention
-        #self.attention = True
-        #self.attention = False
 
-        self.tcn_output_dim = 256 #256, 768, 2304
-
+        self.tcn_output_dim = 768
         if self.attention:
             self_matching_layer_args = {
                                             'similarity_function': 'WeightedSumProjection',
@@ -191,8 +186,6 @@ class RnnDocReader(nn.Module):
         # Embed both document and question
         x1_emb = self.embedding(x1)
         x2_emb = self.embedding(x2)
-        #print(x1_mask)
-       
 
         # Dropout on embeddings
         if self.args.dropout_emb > 0:
@@ -228,11 +221,10 @@ class RnnDocReader(nn.Module):
             # Encode question with RNN + merge hiddens
             question_hiddens = self.question_rnn(x2_emb, x2_mask)
         #end_time = time.time()
-        print(doc_hiddens.size())
+        #print(doc_hiddens.size())
         #print(end_time-start_time)
         if self.attention:
-            x1_mask_sa = 1 - x1_mask.int()
-            doc_hiddens, self_match_weights = self.self_matching_layer(doc_hiddens, x1_mask_sa)
+            doc_hiddens, self_match_weights = self.self_matching_layer(doc_hiddens, x1_mask)
 
         if self.args.question_merge == 'avg':
             q_merge_weights = layers.uniform_weights(question_hiddens, x2_mask)

@@ -106,6 +106,8 @@ class Predictor(object):
         else:
             q_tokens = list(map(self.tokenizer.tokenize, questions))
             d_tokens = list(map(self.tokenizer.tokenize, documents))
+            #q_tokens = questions.split(' ')
+            #d_tokens = documents.split(' ')
 
         examples = []
         for i in range(len(questions)):
