@@ -394,7 +394,11 @@ class DocReader(object):
     # --------------------------------------------------------------------------
 
     def save(self, filename):
-        state_dict = copy.copy(self.network.state_dict())
+        if self.parallel:
+            network = self.network.module
+        else:
+            network = self.network
+        state_dict = copy.copy(network.state_dict())
         if 'fixed_embedding' in state_dict:
             state_dict.pop('fixed_embedding')
         params = {
@@ -409,8 +413,12 @@ class DocReader(object):
             logger.warning('WARN: Saving failed... continuing anyway.')
 
     def checkpoint(self, filename, epoch):
+        if self.parallel:
+            network = self.network.module
+        else:
+            network = self.network
         params = {
-            'state_dict': self.network.state_dict(),
+            'state_dict': network.state_dict(),
             'word_dict': self.word_dict,
             'feature_dict': self.feature_dict,
             'args': self.args,
