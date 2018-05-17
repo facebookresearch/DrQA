@@ -239,16 +239,15 @@ class DocReader(object):
 
         # Reset fixed embeddings to original value
         if self.args.tune_partial > 0:
+            # Embeddings to fix are indexed after the special + N tuned words
+            offset = self.args.tune_partial + self.word_dict.START
             if self.parallel:
                 embedding = self.network.module.embedding.weight.data
                 fixed_embedding = self.network.module.fixed_embedding
             else:
                 embedding = self.network.embedding.weight.data
                 fixed_embedding = self.network.fixed_embedding
-
-            # Embeddings to fix are the last indices
-            offset = embedding.size(0) - fixed_embedding.size(0)
-            if offset >= 0:
+            if offset < embedding.size(0):
                 embedding[offset:] = fixed_embedding
 
     # --------------------------------------------------------------------------
@@ -278,10 +277,10 @@ class DocReader(object):
         # Transfer to GPU
         if self.use_cuda:
             inputs = [e if e is None else
-                      Variable(e.cuda(async=True), volatile=True)
+                      Variable(e.cuda(async=True))
                       for e in ex[:5]]
         else:
-            inputs = [e if e is None else Variable(e, volatile=True)
+            inputs = [e if e is None else Variable(e)
                       for e in ex[:5]]
 
         # Run forward
@@ -394,11 +393,7 @@ class DocReader(object):
     # --------------------------------------------------------------------------
 
     def save(self, filename):
-        if self.parallel:
-            network = self.network.module
-        else:
-            network = self.network
-        state_dict = copy.copy(network.state_dict())
+        state_dict = copy.copy(self.network.state_dict())
         if 'fixed_embedding' in state_dict:
             state_dict.pop('fixed_embedding')
         params = {
@@ -413,12 +408,8 @@ class DocReader(object):
             logger.warning('WARN: Saving failed... continuing anyway.')
 
     def checkpoint(self, filename, epoch):
-        if self.parallel:
-            network = self.network.module
-        else:
-            network = self.network
         params = {
-            'state_dict': network.state_dict(),
+            'state_dict': self.network.state_dict(),
             'word_dict': self.word_dict,
             'feature_dict': self.feature_dict,
             'args': self.args,

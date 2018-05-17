@@ -72,7 +72,7 @@ class DrQA(object):
             fixed_candidates=None,
             batch_size=128,
             cuda=True,
-            data_parallel=False,
+            data_parallel=True,
             max_loaders=5,
             num_workers=None,
             db_config=None,
@@ -288,6 +288,7 @@ class DrQA(object):
                 prediction = {
                     'doc_id': all_docids[qidx][rel_didx],
                     'span': s_tokens[sidx].slice(s, e + 1).untokenize(),
+                    #'span': s_tokens[sidx].slice(s-10, e+10).untokenize(),
                     'doc_score': float(all_doc_scores[qidx][rel_didx]),
                     'span_score': float(score),
                 }

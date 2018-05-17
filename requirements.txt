@@ -6,4 +6,4 @@ tqdm
 prettytable
 scipy
 nltk
-pexpect==4.2.1
+pexpect

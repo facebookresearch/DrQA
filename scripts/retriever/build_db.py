@@ -12,7 +12,7 @@ import json
 import os
 import logging
 import importlib.util
-
+from time import sleep
 from multiprocessing import Pool as ProcessPool
 from tqdm import tqdm
 from drqa.retriever import utils
@@ -23,7 +23,6 @@ fmt = logging.Formatter('%(asctime)s: [ %(message)s ]', '%m/%d/%Y %I:%M:%S %p')
 console = logging.StreamHandler()
 console.setFormatter(fmt)
 logger.addHandler(console)
-
 
 # ------------------------------------------------------------------------------
 # Import helper
@@ -37,7 +36,6 @@ def init(filename):
     global PREPROCESS_FN
     if filename:
         PREPROCESS_FN = import_module(filename).preprocess
-
 
 def import_module(filename):
     """Import a module given a full path to the file."""
@@ -63,7 +61,6 @@ def iter_files(path):
     else:
         raise RuntimeError('Path %s is invalid' % path)
 
-
 def get_contents(filename):
     """Parse the contents of a file. Each line is a JSON encoded document."""
     global PREPROCESS_FN
@@ -71,7 +68,10 @@ def get_contents(filename):
     with open(filename) as f:
         for line in f:
             # Parse document
-            doc = json.loads(line)
+            #logger.info(line)
+            doc = json.loads(line, strict=False)
+            #doc = json.loads(line)
+            #logger.info(doc)
             # Maybe preprocess the document with custom function
             if PREPROCESS_FN:
                 doc = PREPROCESS_FN(doc)
@@ -79,9 +79,9 @@ def get_contents(filename):
             if not doc:
                 continue
             # Add the document
-            documents.append((utils.normalize(doc['id']), doc['text']))
+            documents.append((doc['id'], doc['text']))
+    #logger.info("doneFile " + str(doc['id']))
     return documents
-
 
 def store_contents(data_path, save_path, preprocess, num_workers=None):
     """Preprocess and store a corpus of documents in sqlite.
@@ -104,16 +104,50 @@ def store_contents(data_path, save_path, preprocess, num_workers=None):
 
     workers = ProcessPool(num_workers, initializer=init, initargs=(preprocess,))
     files = [f for f in iter_files(data_path)]
+    #logger.info(files)
     count = 0
+    
+    try:
+        with tqdm(total=len(files)) as pbar:
+            for pairs in tqdm(workers.imap_unordered(get_contents, files)):
+                count += len(pairs)
+                c.executemany("INSERT INTO documents VALUES (?,?)", pairs)
+                pbar.update()
+        c.execute("select count(*) from documents;")
+        row = c.fetchall()
+        logger.info(row)
+        logger.info('Read %d docs.' % count)
+        logger.info('Committing...')
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        logger.info("ERROR!!!!!!!!!!!!!!!!!!!")
+        logger.info(pairs[0][:1])
+        pass
+
+    ''' 
+    
     with tqdm(total=len(files)) as pbar:
         for pairs in tqdm(workers.imap_unordered(get_contents, files)):
             count += len(pairs)
+            #logger.info(pairs)
+            #sleep(0.1)
             c.executemany("INSERT INTO documents VALUES (?,?)", pairs)
+            #sleep(0.1)
             pbar.update()
+    c.execute("select count(*) from documents;")
+    row = c.fetchall()
+    logger.info(row)
     logger.info('Read %d docs.' % count)
     logger.info('Committing...')
     conn.commit()
     conn.close()
+    '''
+    
+
+     
+
+
 
 
 # ------------------------------------------------------------------------------

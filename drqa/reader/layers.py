@@ -81,6 +81,7 @@ class StackedBRNN(nn.Module):
                                       p=self.dropout_rate,
                                       training=self.training)
             # Forward
+            self.rnns[i].flatten_parameters()
             rnn_output = self.rnns[i](rnn_input)[0]
             outputs.append(rnn_output)
 
@@ -132,10 +133,9 @@ class StackedBRNN(nn.Module):
                 dropout_input = F.dropout(rnn_input.data,
                                           p=self.dropout_rate,
                                           training=self.training)
-                rnn_input = nn.utils.rnn.PackedSequence(dropout_input,
-                                                        rnn_input.batch_sizes)
+                rnn_input = nn.utils.rnn.PackedSequence(dropout_input, rnn_input.batch_sizes)
+            self.rnns[i].flatten_parameters()
             outputs.append(self.rnns[i](rnn_input)[0])
-
         # Unpack everything
         for i, o in enumerate(outputs[1:], 1):
             outputs[i] = nn.utils.rnn.pad_packed_sequence(o)[0]
@@ -206,7 +206,7 @@ class SeqAttnMatch(nn.Module):
         scores.data.masked_fill_(y_mask.data, -float('inf'))
 
         # Normalize with softmax
-        alpha_flat = F.softmax(scores.view(-1, y.size(1)), dim=-1)
+        alpha_flat = F.softmax(scores.view(-1, y.size(1)), dim=1)
         alpha = alpha_flat.view(-1, x.size(1), y.size(1))
 
         # Take weighted average
@@ -247,10 +247,10 @@ class BilinearSeqAttn(nn.Module):
         if self.normalize:
             if self.training:
                 # In training we output log-softmax for NLL
-                alpha = F.log_softmax(xWy, dim=-1)
+                alpha = F.log_softmax(xWy)
             else:
                 # ...Otherwise 0-1 probabilities
-                alpha = F.softmax(xWy, dim=-1)
+                alpha = F.softmax(xWy)
         else:
             alpha = xWy.exp()
         return alpha
@@ -277,7 +277,7 @@ class LinearSeqAttn(nn.Module):
         x_flat = x.view(-1, x.size(-1))
         scores = self.linear(x_flat).view(x.size(0), x.size(1))
         scores.data.masked_fill_(x_mask.data, -float('inf'))
-        alpha = F.softmax(scores, dim=-1)
+        alpha = F.softmax(scores, dim=1)
         return alpha
 
 
