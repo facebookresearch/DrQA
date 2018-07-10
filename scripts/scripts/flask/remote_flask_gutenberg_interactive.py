@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-# Copyright 2017-present, Facebook, Inc.
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-"""Interactive interface to full DrQA pipeline."""
+import numpy as np
+import flask
+import io
+import sys
 
 import torch
 import argparse
@@ -22,6 +19,12 @@ fmt = logging.Formatter('%(asctime)s: [ %(message)s ]', '%m/%d/%Y %I:%M:%S %p')
 console = logging.StreamHandler()
 console.setFormatter(fmt)
 logger.addHandler(console)
+
+from gutenberg.query import get_etexts
+from gutenberg.query import get_metadata
+
+# initialize our Flask application and the Keras model
+app = flask.Flask(__name__)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--reader-model', type=str, default=None,
@@ -70,49 +73,79 @@ DrQA = pipeline.DrQA(
     tokenizer=args.tokenizer
 )
 
-
 # ------------------------------------------------------------------------------
 # Drop in to interactive mode
 # ------------------------------------------------------------------------------
 
-
-def process(question, candidates=None, top_n=1, n_docs=5):
+def process(question, candidates=None, top_n=3, n_docs=3):
+    torch.cuda.empty_cache()
+    title = ''
+    author = ''
     predictions = DrQA.process(
         question, candidates, top_n, n_docs, return_context=True
     )
     table = prettytable.PrettyTable(
-        ['Rank', 'Answer', 'Doc', 'Answer Score', 'Doc Score']
+        ['Rank', 'Answer', 'Doc-ID', 'Doc-Title', 'Doc-Author', 'Doc-Link', 'Answer Score', 'Doc Score']
     )
     for i, p in enumerate(predictions, 1):
-        table.add_row([i, p['span'], p['doc_id'],
-                       '%.5g' % p['span_score'],
-                       '%.5g' % p['doc_score']])
+        
+        if not list(get_metadata('title', p['doc_id'])):
+            title = 'Not Available'
+        else:
+            tittle = list(get_metadata('title', p['doc_id']))[0]
+
+        if not list(get_metadata('author', p['doc_id'])):
+            author = 'Not Available'
+        else:
+            author = list(get_metadata('author', p['doc_id']))[0]
+       
+        if not list(get_metadata('formaturi', p['doc_id'])):
+            url = 'Not Available'
+        else:
+            url = list(get_metadata('formaturi', p['doc_id']))[0]
+
+        table.add_row([i, p['span'], p['doc_id'], tittle, author, url, '%.5g' % p['span_score'], '%.5g' % p['doc_score']])
     print('Top Predictions:')
     print(table)
+    strtable = table.get_string()
     print('\nContexts:')
     for p in predictions:
         text = p['context']['text']
-        #start = p['context']['start']-50
-        #end = p['context']['end']+50
         start = p['context']['start']
         end = p['context']['end']
-
         output = (text[:start] +
                   colored(text[start: end], 'green', attrs=['bold']) +
                   text[end:])
         print('[ Doc = %s ]' % p['doc_id'])
         print(output + '\n')
+    retstring = strtable + '\n' + '[ Doc = ' + str(p['doc_id']) + ']' + '\n' + output + '\n'
+    return retstring
+
+# ## Ask Away!
+@app.route("/predict", methods=["POST"])
+def predict():
+    # initialize the data dictionary that will be returned from the view
+    data = {"success": False, "predictions": []}
+    question = (flask.request.data).decode("utf-8")
+    print("**********************************************************")
+    print(question)
+    y_output = process(question, candidates=None, top_n=1, n_docs=5)
+    print(y_output)
+    data["predictions"].append(str(y_output))
+    
+    #indicate that the request was a success
+    data["success"] = True
+    #return the data dictionary as a JSON response
+    return flask.jsonify(data)
 
 
-banner = """
-Interactive DrQA
->> process(question, candidates=None, top_n=1, n_docs=5)
->> usage()
-"""
 
 
-def usage():
-    print(banner)
+if __name__== "__main__":
+    print(("* Loading Keras model and Flask starting server..."
+		"please wait until server has fully started"))
+
+    app.run(host='0.0.0.0') # Ignore, Development server
 
 
-code.interact(banner=banner, local=locals())
+

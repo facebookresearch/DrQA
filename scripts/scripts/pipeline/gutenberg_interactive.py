@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# Copyright 2017-present, Facebook, Inc.
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-"""Interactive interface to full DrQA pipeline."""
-
 import torch
 import argparse
 import code
@@ -22,6 +14,9 @@ fmt = logging.Formatter('%(asctime)s: [ %(message)s ]', '%m/%d/%Y %I:%M:%S %p')
 console = logging.StreamHandler()
 console.setFormatter(fmt)
 logger.addHandler(console)
+
+from gutenberg.query import get_etexts
+from gutenberg.query import get_metadata
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--reader-model', type=str, default=None,
@@ -76,27 +71,41 @@ DrQA = pipeline.DrQA(
 # ------------------------------------------------------------------------------
 
 
-def process(question, candidates=None, top_n=1, n_docs=5):
+def process(question, candidates=None, top_n=1, n_docs=3):
+    torch.cuda.empty_cache()
+    title = ''
+    author = ''
     predictions = DrQA.process(
         question, candidates, top_n, n_docs, return_context=True
     )
     table = prettytable.PrettyTable(
-        ['Rank', 'Answer', 'Doc', 'Answer Score', 'Doc Score']
+        ['Rank', 'Answer', 'Doc-ID', 'Doc-Title', 'Doc-Author', 'Doc-Link', 'Answer Score', 'Doc Score']
     )
     for i, p in enumerate(predictions, 1):
-        table.add_row([i, p['span'], p['doc_id'],
-                       '%.5g' % p['span_score'],
-                       '%.5g' % p['doc_score']])
+        
+        if not list(get_metadata('title', p['doc_id'])):
+            title = 'Not Available'
+        else:
+            tittle = list(get_metadata('title', p['doc_id']))[0]
+
+        if not list(get_metadata('author', p['doc_id'])):
+            author = 'Not Available'
+        else:
+            author = list(get_metadata('author', p['doc_id']))[0]
+       
+        if not list(get_metadata('formaturi', p['doc_id'])):
+            url = 'Not Available'
+        else:
+            url = list(get_metadata('formaturi', p['doc_id']))[0]
+
+        table.add_row([i, p['span'], p['doc_id'], tittle, author, url, '%.5g' % p['span_score'], '%.5g' % p['doc_score']])
     print('Top Predictions:')
     print(table)
     print('\nContexts:')
     for p in predictions:
         text = p['context']['text']
-        #start = p['context']['start']-50
-        #end = p['context']['end']+50
         start = p['context']['start']
         end = p['context']['end']
-
         output = (text[:start] +
                   colored(text[start: end], 'green', attrs=['bold']) +
                   text[end:])
@@ -105,8 +114,8 @@ def process(question, candidates=None, top_n=1, n_docs=5):
 
 
 banner = """
-Interactive DrQA
->> process(question, candidates=None, top_n=1, n_docs=5)
+Interactive MRC
+>> process(question, candidates=None, top_n=1, n_docs=3)
 >> usage()
 """
 

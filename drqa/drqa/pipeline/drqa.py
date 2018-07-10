@@ -70,7 +70,7 @@ class DrQA(object):
             embedding_file=None,
             tokenizer=None,
             fixed_candidates=None,
-            batch_size=128,
+            batch_size= 512,
             cuda=True,
             data_parallel=True,
             max_loaders=5,
@@ -176,7 +176,7 @@ class DrQA(object):
         )
         return loader
 
-    def process(self, query, candidates=None, top_n=1, n_docs=5,
+    def process(self, query, candidates=None, top_n=1, n_docs=1,
                 return_context=False):
         """Run a single query."""
         predictions = self.process_batch(
@@ -185,7 +185,7 @@ class DrQA(object):
         )
         return predictions[0]
 
-    def process_batch(self, queries, candidates=None, top_n=1, n_docs=5,
+    def process_batch(self, queries, candidates=None, top_n=1, n_docs=1,
                       return_context=False):
         """Run a batch of queries (more efficient)."""
         t0 = time.time()

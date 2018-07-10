@@ -76,7 +76,8 @@ DrQA = pipeline.DrQA(
 # ------------------------------------------------------------------------------
 
 
-def process(question, candidates=None, top_n=1, n_docs=5):
+def process(question, candidates=None, top_n=1, n_docs=3):
+    torch.cuda.empty_cache()
     predictions = DrQA.process(
         question, candidates, top_n, n_docs, return_context=True
     )
@@ -106,7 +107,7 @@ def process(question, candidates=None, top_n=1, n_docs=5):
 
 banner = """
 Interactive DrQA
->> process(question, candidates=None, top_n=1, n_docs=5)
+>> process(question, candidates=None, top_n=1, n_docs=3)
 >> usage()
 """
 

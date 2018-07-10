@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8"> 
+        <script>
+            function hit(question){
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", '/answer', true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.onreadystatechange = function () {
+                    console.log(xhr.status);
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var json = JSON.parse(xhr.responseText);
+                        console.log(json.answer);
+                        var ans = document.getElementById("answer");
+                        ans.innerHTML = json.answer;
+                    }
+                };
+                var params = JSON.stringify({"question": question});
+                xhr.send(params);
+                console.log("sent");
+            }
+        </script>
+        <style>
+            body{
+
+            }
+        </style>
+    </head>
+    <body>
+        <textarea id='question' placeholder='Your Question here'></textarea>
+        <button id='GetAnswer'>Get Answer</button>
+        <p id='answer'>Your answer appears here</p>
+        <script>
+            var button = document.getElementById("GetAnswer");
+            button.onclick = function (){
+                var ques = document.getElementById("question");
+                console.log("hitting");
+                hit(ques.value);
+
+            };
+        </script>
+    </body>
+</html>

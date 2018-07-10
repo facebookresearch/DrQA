@@ -76,19 +76,22 @@ DrQA = pipeline.DrQA(
 # ------------------------------------------------------------------------------
 
 
-def process(question, candidates=None, top_n=1, n_docs=5):
+def process(question, candidates=None, top_n=3, n_docs=3):
+    torch.cuda.empty_cache()
     predictions = DrQA.process(
         question, candidates, top_n, n_docs, return_context=True
     )
     table = prettytable.PrettyTable(
         ['Rank', 'Answer', 'Doc', 'Answer Score', 'Doc Score']
     )
-    for i, p in enumerate(predictions, 1):
-        table.add_row([i, p['span'], p['doc_id'],
+    
+    for i, p in enumerate(predictions):
+        table.add_row([i+1, p['span'], p['doc_id'],
                        '%.5g' % p['span_score'],
                        '%.5g' % p['doc_score']])
     print('Top Predictions:')
     print(table)
+    '''
     print('\nContexts:')
     for p in predictions:
         text = p['context']['text']
@@ -102,11 +105,11 @@ def process(question, candidates=None, top_n=1, n_docs=5):
                   text[end:])
         print('[ Doc = %s ]' % p['doc_id'])
         print(output + '\n')
-
+    '''
 
 banner = """
 Interactive DrQA
->> process(question, candidates=None, top_n=1, n_docs=5)
+>> process(question, candidates=None, top_n=3, n_docs=3)
 >> usage()
 """
 
