@@ -386,11 +386,14 @@ Please cite the ACL paper if you use DrQA in your work:
 }
 ```
 
-## Connection with ParlAI
+## DrQA Elsewhere
 
-This implementation of the DrQA Document Reader is closely related to the one found in [ParlAI](https://github.com/facebookresearch/ParlAI). Here, however, the work is extended to interact with the Document Retriever in the open-domain setting. It is also somewhat more efficient to train and achieves slightly better performance given that the ParlAI API restrictions are lifted (e.g. with respect to preprocessing, answer spans, etc).
+### Connection with ParlAI
+This implementation of the DrQA Document Reader is closely related to the one found in [ParlAI](https://github.com/facebookresearch/ParlAI). Here, however, the work is extended to interact with the Document Retriever in the open-domain setting. On the other hand, the implementation in ParlAI is more general, and follows the appropriate API to work in more QA/Dialog settings.
 
-We plan to consolidate this model into the ParlAI interface as well, so that the reader can be interchangeably trained here or multitasked on many datasets with ParlAI.
+### Web UI
+
+[Hamed Zaghaghi](https://github.com/zaghaghi/) has provided a wrapper for a [Web UI](https://github.com/zaghaghi/drqa-webui).
 
 ## License
 DrQA is BSD-licensed. We also provide an additional patent grant.
