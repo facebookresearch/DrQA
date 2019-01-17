@@ -180,7 +180,7 @@ TF-IDF model using Wikipedia (unigrams and bigrams, 2^24 bins, simple tokenizati
 
 | Model | SQuAD P@5 | CuratedTREC P@5 | WebQuestions P@5 | WikiMovies P@5 | Size |
 | :---: | :-------: | :-------------: | :--------------: | :------------: | :---: |
-| [TF-IDF model](https://s3.amazonaws.com/fair-data/drqa/docs-tfidf-ngram%3D2-hash%3D16777216-tokenizer%3Dsimple.npz.gz) | 78.0 | 87.6 | 75.0 | 69.8 | ~13GB |
+| [TF-IDF model](https://dl.fbaipublicfiles.com/drqa/docs-tfidf-ngram%3D2-hash%3D16777216-tokenizer%3Dsimple.npz.gz) | 78.0 | 87.6 | 75.0 | 69.8 | ~13GB |
 
 _P@5 here is defined as the % of questions for which the answer segment appears in one of the top 5 documents_.
 
@@ -190,13 +190,13 @@ Model trained only on SQuAD, evaluated in the SQuAD setting:
 
 | Model | SQuAD Dev EM | SQuAD Dev F1 | Size |
 | :---: | :-----------:| :----------: | :--: |
-| [Single model](https://s3.amazonaws.com/fair-data/drqa/single.mdl) | 69.4 | 78.9 | ~130MB |
+| [Single model](https://dl.fbaipublicfiles.com/drqa/single.mdl) | 69.4 | 78.9 | ~130MB |
 
 Model trained with distant supervision without NER/POS/lemma features, evaluated on multiple datasets (test sets, dev set for SQuAD) in the full Wikipedia setting:
 
 | Model | SQuAD EM | CuratedTREC EM | WebQuestions EM | WikiMovies EM | Size |
 | :---: | :------: | :------------: | :-------------: | :-----------: | :--:
-| [Multitask model](https://s3.amazonaws.com/fair-data/drqa/multitask.mdl) | 29.5 | 27.2 | 18.5 | 36.9 | ~270MB |
+| [Multitask model](https://dl.fbaipublicfiles.com/drqa/multitask.mdl) | 29.5 | 27.2 | 18.5 | 36.9 | ~270MB |
 
 #### Wikipedia
 
@@ -204,17 +204,17 @@ Our full-scale experiments were conducted on the 2016-12-21 dump of English Wiki
 
 | Database | Num. Documents | Size |
 | :------: | :------------: | :-----------------: |
-| [Wikipedia](https://s3.amazonaws.com/fair-data/drqa/docs.db.gz) | 5,075,182 | ~13GB |
+| [Wikipedia](https://dl.fbaipublicfiles.com/drqa/docs.db.gz) | 5,075,182 | ~13GB |
 
 #### QA Datasets
 
 The datasets used for DrQA training and evaluation can be found here:
 
 - SQuAD: [train](https://rajpurkar.github.io/SQuAD-explorer/dataset/train-v1.1.json), [dev](https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json)
-- WebQuestions: [train](http://nlp.stanford.edu/static/software/sempre/release-emnlp2013/lib/data/webquestions/dataset_11/webquestions.examples.train.json.bz2), [test](http://nlp.stanford.edu/static/software/sempre/release-emnlp2013/lib/data/webquestions/dataset_11/webquestions.examples.test.json.bz2), [entities](https://s3.amazonaws.com/fair-data/drqa/freebase-entities.txt.gz)
-- WikiMovies: [train/test/entities](https://s3.amazonaws.com/fair-data/drqa/WikiMovies.tar.gz)
+- WebQuestions: [train](http://nlp.stanford.edu/static/software/sempre/release-emnlp2013/lib/data/webquestions/dataset_11/webquestions.examples.train.json.bz2), [test](http://nlp.stanford.edu/static/software/sempre/release-emnlp2013/lib/data/webquestions/dataset_11/webquestions.examples.test.json.bz2), [entities](https://dl.fbaipublicfiles.com/drqa/freebase-entities.txt.gz)
+- WikiMovies: [train/test/entities](https://dl.fbaipublicfiles.com/drqa/WikiMovies.tar.gz)
 (Rehosted in expected format from https://research.fb.com/downloads/babi/)
-- CuratedTrec: [train/test](https://s3.amazonaws.com/fair-data/drqa/CuratedTrec.tar.gz)
+- CuratedTrec: [train/test](https://dl.fbaipublicfiles.com/drqa/CuratedTrec.tar.gz)
 (Rehosted in expected format from https://github.com/brmson/dataset-factoid-curated)
 
 ##### Format A

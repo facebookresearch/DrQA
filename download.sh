@@ -18,7 +18,7 @@ fi
 DOWNLOAD_PATH_TAR="$DOWNLOAD_PATH.tar.gz"
 
 # Download main hosted data
-wget -O "$DOWNLOAD_PATH_TAR" "https://s3.amazonaws.com/fair-data/drqa/data.tar.gz"
+wget -O "$DOWNLOAD_PATH_TAR" "https://dl.fbaipublicfiles.com/drqa/data.tar.gz"
 
 # Untar
 tar -xvf "$DOWNLOAD_PATH_TAR"
@@ -53,7 +53,7 @@ python scripts/convert/webquestions.py "$DATASET_PATH/WebQuestions-test.json" "$
 rm "$DATASET_PATH/WebQuestions-test.json"
 
 # Get freebase entities for WebQuestions
-wget -O "$DATASET_PATH/freebase-entities.txt.gz" "https://s3.amazonaws.com/fair-data/drqa/freebase-entities.txt.gz"
+wget -O "$DATASET_PATH/freebase-entities.txt.gz" "https://dl.fbaipublicfiles.com/drqa/freebase-entities.txt.gz"
 gzip -d "$DATASET_PATH/freebase-entities.txt.gz"
 
 echo "DrQA download done!"
