@@ -14,6 +14,7 @@ DEFAULTS = {
         DATA_DIR,
         'wikipedia/docs-tfidf-ngram=2-hash=16777216-tokenizer=simple.npz'
     ),
+    'elastic_url': 'localhost:9200'
 }
 
 
@@ -27,8 +28,11 @@ def get_class(name):
         return TfidfDocRanker
     if name == 'sqlite':
         return DocDB
+    if name == 'elasticsearch':
+        return ElasticDocRanker
     raise RuntimeError('Invalid retriever class: %s' % name)
 
 
 from .doc_db import DocDB
 from .tfidf_doc_ranker import TfidfDocRanker
+from .elastic_doc_ranker import ElasticDocRanker

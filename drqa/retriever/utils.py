@@ -106,3 +106,15 @@ def filter_ngram(gram, mode='any'):
         return filtered[0] or filtered[-1]
     else:
         raise ValueError('Invalid mode: %s' % mode)
+
+def get_field(d, field_list):
+    """get the subfield associated to a list of elastic fields 
+        E.g. ['file', 'filename'] to d['file']['filename']
+    """
+    if isinstance(field_list, str):
+        return d[field_list]
+    else:
+        idx = d.copy()
+        for field in field_list:
+            idx = idx[field]
+        return idx
