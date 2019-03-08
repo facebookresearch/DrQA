@@ -128,9 +128,15 @@ class DrQA(object):
         annotators = tokenizers.get_annotators_for_model(self.reader)
         tok_opts = {'annotators': annotators}
 
-        db_config = db_config or {}
-        db_class = db_config.get('class', DEFAULTS['db'])
-        db_opts = db_config.get('options', {})
+        # ElasticSearch is also used as backend if used as ranker
+        if hasattr(self.ranker, 'es'):
+            db_config = ranker_config
+            db_class = ranker_class
+            db_opts = ranker_opts
+        else:
+            db_config = db_config or {}
+            db_class = db_config.get('class', DEFAULTS['db'])
+            db_opts = db_config.get('options', {})
 
         logger.info('Initializing tokenizers and document retrievers...')
         self.num_workers = num_workers
