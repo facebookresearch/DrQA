@@ -149,7 +149,11 @@ def set_defaults(args):
     # Embeddings options
     if args.embedding_file:
         with open(args.embedding_file) as f:
-            dim = len(f.readline().strip().split(' ')) - 1
+            line = f.readline().rstrip().split(' ')
+            if len(line) == 2:
+                dim = int(line[1])
+            else:
+                dim = len(f.readline().rstrip().split(' ')) - 1
         args.embedding_dim = dim
     elif not args.embedding_dim:
         raise RuntimeError('Either embedding_file or embedding_dim '
@@ -320,8 +324,8 @@ def eval_accuracies(pred_s, target_s, pred_e, target_e):
     """
     # Convert 1D tensors to lists of lists (compatibility)
     if torch.is_tensor(target_s):
-        target_s = [[e] for e in target_s]
-        target_e = [[e] for e in target_e]
+        target_s = [[e.item()] for e in target_s]
+        target_e = [[e.item()] for e in target_e]
 
     # Compute accuracies from targets
     batch_size = len(pred_s)

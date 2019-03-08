@@ -134,7 +134,7 @@ class Predictor(object):
             predictions = []
             for j in range(len(s[i])):
                 span = d_tokens[i].slice(s[i][j], e[i][j] + 1).untokenize()
-                predictions.append((span, score[i][j]))
+                predictions.append((span, score[i][j].item()))
             results.append(predictions)
         return results
 
