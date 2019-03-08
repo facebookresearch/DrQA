@@ -9,7 +9,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 
 
 # ------------------------------------------------------------------------------
@@ -108,10 +107,7 @@ class StackedBRNN(nn.Module):
         lengths = x_mask.data.eq(0).long().sum(1).squeeze()
         _, idx_sort = torch.sort(lengths, dim=0, descending=True)
         _, idx_unsort = torch.sort(idx_sort, dim=0)
-
         lengths = list(lengths[idx_sort])
-        idx_sort = Variable(idx_sort)
-        idx_unsort = Variable(idx_unsort)
 
         # Sort x
         x = x.index_select(0, idx_sort)
@@ -155,7 +151,7 @@ class StackedBRNN(nn.Module):
             padding = torch.zeros(output.size(0),
                                   x_mask.size(1) - output.size(1),
                                   output.size(2)).type(output.data.type())
-            output = torch.cat([output, Variable(padding)], 1)
+            output = torch.cat([output, padding], 1)
 
         # Dropout on output layer
         if self.dropout_output and self.dropout_rate > 0:
@@ -295,7 +291,7 @@ def uniform_weights(x, x_mask):
     Output:
         x_avg: batch * hdim
     """
-    alpha = Variable(torch.ones(x.size(0), x.size(1)))
+    alpha = torch.ones(x.size(0), x.size(1))
     if x.data.is_cuda:
         alpha = alpha.cuda()
     alpha = alpha * x_mask.eq(0).float()

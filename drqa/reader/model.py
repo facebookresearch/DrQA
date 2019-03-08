@@ -13,7 +13,6 @@ import numpy as np
 import logging
 import copy
 
-from torch.autograd import Variable
 from .config import override_model_args
 from .rnn_reader import RnnDocReader
 
@@ -104,6 +103,10 @@ class DocReader(object):
         # When normalized, some words are duplicated. (Average the embeddings).
         vec_counts = {}
         with open(embedding_file) as f:
+            # Skip first line if of form count/dim.
+            line = f.readline().rstrip().split(' ')
+            if len(line) != 2:
+                f.seek(0)
             for line in f:
                 parsed = line.rstrip().split(' ')
                 assert(len(parsed) == embedding.size(1) + 1)
@@ -202,14 +205,14 @@ class DocReader(object):
 
         # Transfer to GPU
         if self.use_cuda:
-            inputs = [e if e is None else Variable(e.cuda(async=True))
+            inputs = [e if e is None else e.cuda(non_blocking=True)
                       for e in ex[:5]]
-            target_s = Variable(ex[5].cuda(async=True))
-            target_e = Variable(ex[6].cuda(async=True))
+            target_s = ex[5].cuda(non_blocking=True)
+            target_e = ex[6].cuda(non_blocking=True)
         else:
-            inputs = [e if e is None else Variable(e) for e in ex[:5]]
-            target_s = Variable(ex[5])
-            target_e = Variable(ex[6])
+            inputs = [e if e is None else e for e in ex[:5]]
+            target_s = ex[5]
+            target_e = ex[6]
 
         # Run forward
         score_s, score_e = self.network(*inputs)
@@ -222,8 +225,8 @@ class DocReader(object):
         loss.backward()
 
         # Clip gradients
-        torch.nn.utils.clip_grad_norm(self.network.parameters(),
-                                      self.args.grad_clipping)
+        torch.nn.utils.clip_grad_norm_(self.network.parameters(),
+                                       self.args.grad_clipping)
 
         # Update parameters
         self.optimizer.step()
@@ -232,7 +235,7 @@ class DocReader(object):
         # Reset any partially fixed parameters (e.g. rare words)
         self.reset_parameters()
 
-        return loss.data[0], ex[0].size(0)
+        return loss.item(), ex[0].size(0)
 
     def reset_parameters(self):
         """Reset any partially fixed parameters to original states."""
@@ -277,15 +280,15 @@ class DocReader(object):
 
         # Transfer to GPU
         if self.use_cuda:
-            inputs = [e if e is None else
-                      Variable(e.cuda(async=True), volatile=True)
+            inputs = [e if e is None else e.cuda(non_blocking=True)
                       for e in ex[:5]]
         else:
-            inputs = [e if e is None else Variable(e, volatile=True)
+            inputs = [e if e is None else e.cuda(non_blocking=True)
                       for e in ex[:5]]
 
         # Run forward
-        score_s, score_e = self.network(*inputs)
+        with torch.no_grad():
+            score_s, score_e = self.network(*inputs)
 
         # Decode predictions
         score_s = score_s.data.cpu()
