@@ -283,8 +283,7 @@ class DocReader(object):
             inputs = [e if e is None else e.cuda(non_blocking=True)
                       for e in ex[:5]]
         else:
-            inputs = [e if e is None else e.cuda(non_blocking=True)
-                      for e in ex[:5]]
+            inputs = [e for e in ex[:5]]
 
         # Run forward
         with torch.no_grad():
