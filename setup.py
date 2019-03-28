@@ -8,7 +8,7 @@
 from setuptools import setup, find_packages
 import sys
 
-with open('README.md') as f:
+with open('README.md', encoding='utf-8') as f:
     readme = f.read()
 
 with open('LICENSE') as f:
