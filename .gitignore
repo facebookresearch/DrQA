@@ -1,0 +1,7 @@
+*.pyc
+*.DS_Store
+*~
+data/
+*.tar.gz
+*.egg-info
+scripts/reader/official_eval.py

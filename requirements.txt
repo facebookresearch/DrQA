@@ -1,0 +1,10 @@
+numpy
+scikit-learn
+termcolor
+regex
+tqdm
+prettytable
+scipy
+nltk
+elasticsearch
+pexpect==4.2.1

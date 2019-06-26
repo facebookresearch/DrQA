@@ -1,0 +1,469 @@
+{ "data" : 
+ [
+ { 
+ "question" : "Which NFL team represented the AFC at Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl", "Super Bowl 50", "Peyton Manning", "NFL on CBS", "Denver Broncos"],
+ "answers" : ["Denver Broncos", "Denver Broncos", "Denver Broncos"]
+},
+ { 
+ "question" : "Which NFL team represented the NFC at Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl", "Super Bowl 50", "NFL on CBS", "Super Bowl XLIV", "Carolina Panthers"],
+ "answers" : ["Carolina Panthers", "Carolina Panthers", "Carolina Panthers"]
+},
+ { 
+ "question" : "Where did Super Bowl 50 take place?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XXXVII", "Peyton Manning"],
+ "answers" : ["Santa Clara, California", "Levi's Stadium", "Levi's Stadium in the San Francisco Bay Area at Santa Clara, California."]
+},
+ { 
+ "question" : "Which NFL team won Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl", "Super Bowl 50", "Peyton Manning", "Super Bowl commercials", "NFL on CBS"],
+ "answers" : ["Denver Broncos", "Denver Broncos", "Denver Broncos"]
+},
+ { 
+ "question" : "What color was used to emphasize the 50th anniversary of the Super Bowl?" ,
+ "doc_ids" : ["Super Bowl 50", "2009 NFL season", "Super Bowl XLII", "Denver Broncos", "Super Bowl XLIV"],
+ "answers" : ["gold", "gold", "gold"]
+},
+ { 
+ "question" : "What was the theme of Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XLIV", "Peyton Manning"],
+ "answers" : [""golden anniversary"", "gold-themed", ""golden anniversary"]
+},
+ { 
+ "question" : "What was the theme of Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XLIV", "Peyton Manning"],
+ "answers" : [""golden anniversary"", "gold-themed", "gold"]
+},
+ { 
+ "question" : "Who won Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XLIV", "Peyton Manning"],
+ "answers" : ["Denver Broncos", "Denver Broncos", "Denver Broncos"]
+},
+ { 
+ "question" : "What venue did Super Bowl 50 take place in?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "Super Bowl XXXVII", "Super Bowl XLIV"],
+ "answers" : ["Levi's Stadium", "Levi's Stadium", "Levi's Stadium in the San Francisco Bay Area at Santa Clara"]
+},
+ { 
+ "question" : "What city did Super Bowl 50 take place in?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XXXVII", "Peyton Manning"],
+ "answers" : ["Santa Clara", "Santa Clara", "Santa Clara"]
+},
+ { 
+ "question" : "If Roman numerals were used, what would Super Bowl 50 have been called?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl XLV", "Super Bowl XLIV", "Super Bowl commercials"],
+ "answers" : ["Super Bowl L", "L", "Super Bowl L"]
+},
+ { 
+ "question" : "Super Bowl 50 decided the NFL champion for what season?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "2015 NFL season", "Peyton Manning"],
+ "answers" : ["2015", "the 2015 season", "2015"]
+},
+ { 
+ "question" : "What year did the Denver Broncos secure a Super Bowl title for the third time?" ,
+ "doc_ids" : ["Denver Broncos", "Peyton Manning", "Super Bowl", "John Elway", "History of the Indianapolis Colts"],
+ "answers" : ["2015", "2016", "2015"]
+},
+ { 
+ "question" : "What city did Super Bowl 50 take place in?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XXXVII", "Peyton Manning"],
+ "answers" : ["Santa Clara", "Santa Clara", "Santa Clara"]
+},
+ { 
+ "question" : "What stadium did Super Bowl 50 take place in?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "Super Bowl XXXVII", "Super Bowl XLIV"],
+ "answers" : ["Levi's Stadium", "Levi's Stadium", "Levi's Stadium"]
+},
+ { 
+ "question" : "What was the final score of Super Bowl 50? " ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "Peyton Manning", "Super Bowl XLIV"],
+ "answers" : ["24–10", "24–10", "24–10"]
+},
+ { 
+ "question" : "What month, day and year did Super Bowl 50 take place? " ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Peyton Manning", "Super Bowl XXXVII"],
+ "answers" : ["February 7, 2016", "February 7, 2016", "February 7, 2016"]
+},
+ { 
+ "question" : "What year was Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Peyton Manning", "Super Bowl XLIV"],
+ "answers" : ["2015", "2016", "2016"]
+},
+ { 
+ "question" : "What team was the AFC champion?" ,
+ "doc_ids" : ["History of the New York Jets", "History of the New England Patriots", "History of the Kansas City Chiefs", "San Diego Chargers", "Jim Harbaugh"],
+ "answers" : ["Denver Broncos", "Denver Broncos", "Denver Broncos"]
+},
+ { 
+ "question" : "What team was the NFC champion?" ,
+ "doc_ids" : ["History of the San Francisco 49ers", "San Francisco 49ers", "Carolina Panthers", "2009 Minnesota Vikings season", "Washington Redskins"],
+ "answers" : ["Carolina Panthers", "Carolina Panthers", "Carolina Panthers"]
+},
+ { 
+ "question" : "Who won Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XLIV", "Peyton Manning"],
+ "answers" : ["Denver Broncos", "Denver Broncos", "Denver Broncos"]
+},
+ { 
+ "question" : "Super Bowl 50 determined the NFL champion for what season?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "Peyton Manning", "Super Bowl XLIV"],
+ "answers" : ["2015", "the 2015 season", "2015"]
+},
+ { 
+ "question" : "Which team won Super Bowl 50." ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "Peyton Manning", "Super Bowl XLIV"],
+ "answers" : ["Denver Broncos", "Denver Broncos", "Denver Broncos"]
+},
+ { 
+ "question" : "Where was Super Bowl 50 held?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Peyton Manning", "Super Bowl XLIV"],
+ "answers" : ["Santa Clara, California.", "Levi's Stadium", "Levi's Stadium"]
+},
+ { 
+ "question" : "The name of the NFL championship game is?" ,
+ "doc_ids" : ["History of the National Football League championship", "History of the Chicago Bears", "History of the New York Giants (1925–78)", "History of the New York Giants", "Green Bay Packers"],
+ "answers" : ["Super Bowl", "Super Bowl", "Super Bowl"]
+},
+ { 
+ "question" : "What 2015 NFL team one the AFC playoff?" ,
+ "doc_ids" : ["Baltimore Ravens", "2015 NFL season", "National Football League on television", "San Diego Chargers", "Indianapolis Colts"],
+ "answers" : ["Denver Broncos", "Denver Broncos", "Denver Broncos"]
+},
+ { 
+ "question" : "Which Carolina Panthers player was named Most Valuable Player?" ,
+ "doc_ids" : ["Carolina Panthers", "Cam Newton", "Captain Munnerlyn", "Super Bowl 50", "History of the New Orleans Saints"],
+ "answers" : ["Cam Newton", "Cam Newton", "Cam Newton"]
+},
+ { 
+ "question" : "How many appearances have the Denver Broncos made in the Super Bowl?" ,
+ "doc_ids" : ["History of the Denver Broncos", "Peyton Manning", "Super Bowl 50", "Super Bowl", "Denver Broncos"],
+ "answers" : ["8", "eight", "eight"]
+},
+ { 
+ "question" : "What year was the Carolina Panthers franchise founded?" ,
+ "doc_ids" : ["Carolina Panthers", "Cam Newton", "2015 Carolina Panthers season", "History of the Carolina Panthers", "2008 Carolina Panthers season"],
+ "answers" : ["1995", "1995", "1995"]
+},
+ { 
+ "question" : "What team did the Panthers defeat?" ,
+ "doc_ids" : ["Julius Peppers", "Nathan Horton", "Josh Norman (cornerback)", "Pitt Stadium", "Nottingham Panthers"],
+ "answers" : ["Arizona Cardinals", "the Arizona Cardinals", "Arizona Cardinals"]
+},
+ { 
+ "question" : "Who did the Broncos prevent from going to the Super Bowl?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl XLVIII", "Super Bowl XXXII", "Denver Broncos"],
+ "answers" : ["New England Patriots", "the New England Patriots", "New England Patriots"]
+},
+ { 
+ "question" : "Who did the Panthers beat in the NFC Championship Game?" ,
+ "doc_ids" : ["Carolina Panthers", "History of the Dallas Cowboys", "History of the San Francisco 49ers", "History of the Carolina Panthers", "History of the Chicago Bears"],
+ "answers" : ["Arizona Cardinals", "the Arizona Cardinals", "Arizona Cardinals"]
+},
+ { 
+ "question" : "Who lost to the Broncos in the AFC Championship?" ,
+ "doc_ids" : ["National Football League rivalries", "History of the Denver Broncos", "History of the Pittsburgh Steelers", "Oakland Raiders", "Denver Broncos"],
+ "answers" : ["New England Patriots", "the New England Patriots", "New England Patriots"]
+},
+ { 
+ "question" : "Who were the defending Super Bowl champions?" ,
+ "doc_ids" : ["National Football League Kickoff game", "Super Bowl", "History of the Seattle Seahawks", "Peyton Manning", "Super Bowl XXXII"],
+ "answers" : ["New England Patriots", "the New England Patriots", "New England Patriots"]
+},
+ { 
+ "question" : "How many teams have been in the Super Bowl eight times?" ,
+ "doc_ids" : ["History of the New England Patriots", "Super Bowl", "Joe Montana", "Super Bowl XLII", "Super Bowl XLIII"],
+ "answers" : ["four", "four", "four"]
+},
+ { 
+ "question" : "Who was this season's NFL MVP?" ,
+ "doc_ids" : ["Tom Brady", "National Football League Most Valuable Player Award", "Peyton Manning", "Kurt Warner", "History of the Indianapolis Colts"],
+ "answers" : ["Cam Newton", "Cam Newton", "Cam Newton"]
+},
+ { 
+ "question" : "What was the win/loss ratio in 2015 for the Carolina Panthers during their regular season?" ,
+ "doc_ids" : ["Carolina Panthers", "Cam Newton", "2015 Carolina Panthers season", "History of the New Orleans Saints", "History of the Carolina Panthers"],
+ "answers" : ["15–1", "15–1", "15–1"]
+},
+ { 
+ "question" : "Which Carolina Panthers team member was picked as the team's MVP in 2015? " ,
+ "doc_ids" : ["Carolina Panthers", "Cam Newton", "History of the Carolina Panthers", "History of the New Orleans Saints", "Super Bowl 50"],
+ "answers" : ["Cam Newton", "Cam Newton", "Cam Newton"]
+},
+ { 
+ "question" : "What were the win/loss game stats for the Denver Bronco's regular season in 2015?" ,
+ "doc_ids" : ["2014 BYU Cougars football team", "2015 BYU Cougars football team", "2016 BYU Cougars football team", "Peyton Manning", "2016 Arizona Wildcats football team"],
+ "answers" : ["12–4", "12–4", "12–4"]
+},
+ { 
+ "question" : "How many teams have played in the Super Bowl eight times?" ,
+ "doc_ids" : ["History of the New England Patriots", "Super Bowl", "Joe Montana", "Super Bowl XLII", "Super Bowl XLIII"],
+ "answers" : ["4", "four", "four"]
+},
+ { 
+ "question" : "Which team did not get a chance to defend their Super Bowl XLIX win in Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl commercials", "Super Bowl", "Super Bowl XLIX", "Super Bowl 50", "Super Bowl XXX"],
+ "answers" : ["New England Patriots", "the New England Patriots", "New England Patriots"]
+},
+ { 
+ "question" : "Who is the quarterback for the Panthers?" ,
+ "doc_ids" : ["Cam Newton", "History of the Carolina Panthers", "Carolina Panthers", "2010 Carolina Panthers season", "2009 Carolina Panthers season"],
+ "answers" : ["Cam Newton", "Cam Newton", "Cam Newton"]
+},
+ { 
+ "question" : "Who did Carolina beat in the NFC championship game?" ,
+ "doc_ids" : ["History of the Dallas Cowboys", "History of the San Francisco 49ers", "Carolina Panthers", "San Francisco 49ers", "History of the Chicago Bears"],
+ "answers" : ["Arizona Cardinals", "the Arizona Cardinals", "Arizona Cardinals"]
+},
+ { 
+ "question" : "How many times have the Panthers been in the Super Bowl?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl XXXVIII", "Super Bowl", "Super Bowl XLII", "Super Bowl XLIII"],
+ "answers" : ["2", "second", "second"]
+},
+ { 
+ "question" : "Who did Denver beat in the AFC championship?" ,
+ "doc_ids" : ["History of the Pittsburgh Steelers", "National Football League rivalries", "Oakland Raiders", "History of the New England Patriots", "Baltimore Ravens"],
+ "answers" : ["New England Patriots", "the New England Patriots", "New England Patriots"]
+},
+ { 
+ "question" : "Who did Denver beat in the 2015 AFC Championship game?" ,
+ "doc_ids" : ["National Football League rivalries", "History of the Pittsburgh Steelers", "History of the New England Patriots", "Oakland Raiders", "Cleveland Browns"],
+ "answers" : ["New England Patriots", "the New England Patriots", "New England Patriots"]
+},
+ { 
+ "question" : "Who did the Carolina Panthers beat in the 2015 NFC Championship game?" ,
+ "doc_ids" : ["Carolina Panthers", "History of the Dallas Cowboys", "Cam Newton", "Super Bowl 50", "History of the Carolina Panthers"],
+ "answers" : ["Arizona Cardinals", "the Arizona Cardinals", "Arizona Cardinals"]
+},
+ { 
+ "question" : "Who was the 2015 NFL MVP?" ,
+ "doc_ids" : ["Tom Brady", "National Football League Most Valuable Player Award", "Cam Newton", "2015 NFL season", "Peyton Manning"],
+ "answers" : ["Cam Newton", "Cam Newton", "Cam Newton"]
+},
+ { 
+ "question" : "Who did the Panthers beat to become the NFC champs?" ,
+ "doc_ids" : ["Carolina Panthers", "History of the Carolina Panthers", "History of the Philadelphia Eagles", "Super Bowl 50", "History of the Seattle Seahawks"],
+ "answers" : ["Arizona Cardinals", "the Arizona Cardinals", "Arizona Cardinals"]
+},
+ { 
+ "question" : "What year did the Carolina Panthers form?" ,
+ "doc_ids" : ["Carolina Panthers", "Cam Newton", "2008 Carolina Panthers season", "History of the Carolina Panthers", "2015 Carolina Panthers season"],
+ "answers" : ["1995.", "1995", "1995"]
+},
+ { 
+ "question" : "Who was the Super Bowl 50 MVP?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "Peyton Manning", "Super Bowl XLIV"],
+ "answers" : ["Von Miller", "Von Miller", "Miller"]
+},
+ { 
+ "question" : "How many fumbles did Von Miller force in Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Von Miller", "2015 Denver Broncos season", "Super Bowl XXXV", "History of the Denver Broncos"],
+ "answers" : ["2", "two", "two"]
+},
+ { 
+ "question" : "Which Denver linebacker was named Super Bowl MVP?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl XXXIII", "Tom Brady", "Super Bowl XXXV", "Super Bowl XXXII"],
+ "answers" : ["linebacker Von Miller", "Von Miller", "Miller"]
+},
+ { 
+ "question" : "How many solo tackles did Von Miller make at Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Von Miller", "Super Bowl XXXV", "2015–16 NFL playoffs", "2015 Denver Broncos season"],
+ "answers" : ["five solo tackles", "five", "five"]
+},
+ { 
+ "question" : "Who was limited by Denver's defense?" ,
+ "doc_ids" : ["Denver", "History of Denver", "John Denver", "Denver Nuggets", "Super Bowl XLVIII"],
+ "answers" : ["Newton was limited by Denver's defense", "Newton", "Newton"]
+},
+ { 
+ "question" : "How many times was Cam Newton sacked?" ,
+ "doc_ids" : ["Cam Newton", "2011 Carolina Panthers season", "2010 Auburn Tigers football team", "2015 Carolina Panthers season", "2015–16 NFL playoffs"],
+ "answers" : ["seven", "seven", "seven"]
+},
+ { 
+ "question" : "Who won the Super Bowl MVP?" ,
+ "doc_ids" : ["Super Bowl", "Tom Brady", "Super Bowl XXXV", "Super Bowl XLIII", "Super Bowl XLVIII"],
+ "answers" : ["Von Miller", "The Broncos", "Miller"]
+},
+ { 
+ "question" : "How many turnovers did Cam Newton have?" ,
+ "doc_ids" : ["Cam Newton", "2011 Carolina Panthers season", "2015 Carolina Panthers season", "2010 Auburn Tigers football team", "2013 Carolina Panthers season"],
+ "answers" : ["three", "three", "three"]
+},
+ { 
+ "question" : "How many fumbles did Von Miller force?" ,
+ "doc_ids" : ["Von Miller", "2015 Denver Broncos season", "Ferdinand Freiherr von Miller", "Fritz von Miller", "Super Bowl 50"],
+ "answers" : ["two", "two", "two"]
+},
+ { 
+ "question" : "Who was given the esteemed status of MVP for Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "Peyton Manning", "Super Bowl XLIV"],
+ "answers" : ["Von Miller", "Von Miller", "Miller"]
+},
+ { 
+ "question" : "What position does Von Miller play for the Denver Broncos?" ,
+ "doc_ids" : ["2015 Denver Broncos season", "Von Miller", "2013 Denver Broncos season", "2014 Denver Broncos season", "Super Bowl 50"],
+ "answers" : ["linebacker", "linebacker", "linebacker"]
+},
+ { 
+ "question" : "What was the number of solo tackles that Von Miller had in Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Von Miller", "Super Bowl XXXV", "2015–16 NFL playoffs", "2015 Denver Broncos season"],
+ "answers" : ["5", "five", "five"]
+},
+ { 
+ "question" : "How many forced fumbles did Von Miller have during the Super Bowl 50 game?" ,
+ "doc_ids" : ["Super Bowl 50", "Von Miller", "2015 Denver Broncos season", "Super Bowl XXXV", "History of the Denver Broncos"],
+ "answers" : ["2", "two", "two"]
+},
+ { 
+ "question" : "Who won the MVP for the Super Bowl?" ,
+ "doc_ids" : ["Super Bowl", "Super Bowl XLII", "Super Bowl 50", "Super Bowl XLIII", "Super Bowl XL"],
+ "answers" : ["Von Miller", "Von Miller", "Von Miller"]
+},
+ { 
+ "question" : "How many tackles did Von Miller get during the game?" ,
+ "doc_ids" : ["Von Miller", "Super Bowl 50", "Ferdinand Freiherr von Miller", "Fritz von Miller", "2015 Denver Broncos season"],
+ "answers" : ["5", "five", "five"]
+},
+ { 
+ "question" : "How many times was Cam Newton sacked in Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Cam Newton", "2015 Carolina Panthers season", "2015–16 NFL playoffs", "Peyton Manning"],
+ "answers" : ["seven", "seven", "seven"]
+},
+ { 
+ "question" : "How many times did the Denver defense force Newton into turnovers?" ,
+ "doc_ids" : ["2015–16 NFL playoffs", "Cam Newton", "Super Bowl 50", "2014–15 NFL playoffs", "2014 Chicago Bears season"],
+ "answers" : ["three", "three", "three"]
+},
+ { 
+ "question" : "Which Newton turnover resulted in seven points for Denver?" ,
+ "doc_ids" : ["2015–16 NFL playoffs", "2014 Chicago Bears season", "Cam Newton", "2015 Chicago Bears season", "2013–14 NFL playoffs"],
+ "answers" : ["a fumble", "a fumble", "fumble"]
+},
+ { 
+ "question" : "Who was the Most Valuable Player of Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl commercials", "Peyton Manning", "Super Bowl XLIV"],
+ "answers" : ["Von Miller", "Von Miller", "Von Miller"]
+},
+ { 
+ "question" : "What position does Von Miller play?" ,
+ "doc_ids" : ["Ferdinand Freiherr von Miller", "Fritz von Miller", "Ferdinand von Miller", "2015 Denver Broncos season", "Von Miller"],
+ "answers" : ["linebacker", "linebacker", "linebacker"]
+},
+ { 
+ "question" : "How many times was the Panthers' quarterback sacked?" ,
+ "doc_ids" : ["Cam Newton", "2015–16 NFL playoffs", "2009 New England Patriots season", "Super Bowl 50", "2003–04 NFL playoffs"],
+ "answers" : ["seven", "seven", "seven"]
+},
+ { 
+ "question" : "How many times did the Broncos cause turnovers in the game?" ,
+ "doc_ids" : ["2013 Denver Broncos season", "2015 Chicago Bears season", "2006 Denver Broncos season", "2015 Denver Broncos season", "Jay Cutler (American football)"],
+ "answers" : ["three", "three", "three"]
+},
+ { 
+ "question" : "What Denver player caused two fumbles for the Panthers?" ,
+ "doc_ids" : ["Super Bowl 50", "2015–16 NFL playoffs", "Julius Peppers", "2015 Carolina Panthers season", "2008 Kansas City Chiefs season"],
+ "answers" : ["Von Miller", "Von Miller", "Von Miller"]
+},
+ { 
+ "question" : "How many tackles did Von Miller accomlish by himself in the game?" ,
+ "doc_ids" : ["Von Miller", "Super Bowl 50", "Ferdinand Freiherr von Miller", "Fritz von Miller", "2015 Denver Broncos season"],
+ "answers" : ["five", "five", "five"]
+},
+ { 
+ "question" : "Which network broadcasted Super Bowl 50 in the U.S.?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XLIV", "Super Bowl XXXVII"],
+ "answers" : ["CBS", "CBS", "CBS"]
+},
+ { 
+ "question" : "What was the average cost for a 30 second commercial during Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl commercials", "Super Bowl 50", "Super Bowl", "Super Bowl XLII", "Super Bowl XLIV"],
+ "answers" : ["$5 million", "$5 million", "$5 million"]
+},
+ { 
+ "question" : "Which group headlined the Super Bowl 50 halftime show?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl XXXVIII halftime-show controversy", "Super Bowl 50 halftime show", "Super Bowl commercials"],
+ "answers" : ["Coldplay", "Coldplay", "Coldplay"]
+},
+ { 
+ "question" : "Which performers joined the headliner during the Super Bowl 50 halftime show?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl XXXVIII halftime-show controversy", "Super Bowl 50 halftime show", "Super Bowl XLII"],
+ "answers" : ["Beyoncé and Bruno Mars", "Beyoncé and Bruno Mars", "Beyoncé and Bruno Mars"]
+},
+ { 
+ "question" : "At which Super Bowl did Beyonce headline the halftime show?" ,
+ "doc_ids" : ["Super Bowl XXXVIII halftime-show controversy", "Super Bowl", "Super Bowl XLII", "Super Bowl XXVII", "Super Bowl XLVI halftime show"],
+ "answers" : ["Super Bowl XLVII", "Super Bowl XLVII", "XLVII"]
+},
+ { 
+ "question" : "Who was the broadcaster for Super Bowl 50 in the United States?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XLIV", "Super Bowl XXXVII"],
+ "answers" : ["CBS", "CBS", "CBS"]
+},
+ { 
+ "question" : "What was the average cost of a 30-second commercial?" ,
+ "doc_ids" : ["Average cost", "Super Bowl commercials", "Cost curve", "Average cost method", "Marginal cost"],
+ "answers" : ["$5 million", "$5 million", "$5 million"]
+},
+ { 
+ "question" : "What halftime performer previously headlined Super Bowl XLVII?" ,
+ "doc_ids" : ["Super Bowl XLVII", "Super Bowl", "Baltimore Ravens", "Super Bowl XLVII halftime show", "Super Bowl 50"],
+ "answers" : ["Beyoncé", "Beyoncé", "Beyoncé"]
+},
+ { 
+ "question" : "What halftime performer previously headlined Super Bowl XLVIII?" ,
+ "doc_ids" : ["Super Bowl XLVIII", "Super Bowl 50", "Super Bowl", "Super Bowl XLIX", "Super Bowl commercials"],
+ "answers" : ["Bruno Mars", "Bruno Mars", "Mars"]
+},
+ { 
+ "question" : "Who was the main performer at this year's halftime show?" ,
+ "doc_ids" : ["Super Bowl XXXVIII halftime-show controversy", "Super Bowl XLVI halftime show", "Super Bowl XLIX halftime show", "Super Bowl XLVII halftime show", "Halftime show"],
+ "answers" : ["Coldplay", "Coldplay", "Coldplay"]
+},
+ { 
+ "question" : "Which network broadcasted the 50th Super Bowl game? " ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl XLII", "Super Bowl XLIII", "NFL on NBC"],
+ "answers" : ["CBS", "CBS", "CBS"]
+},
+ { 
+ "question" : "What was the average cost for a TV ad lasting 30 seconds during Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl commercials", "Super Bowl 50", "Super Bowl", "Super Bowl XLIII", "Super Bowl XLIV"],
+ "answers" : ["$5 million", "$5 million", "$5 million"]
+},
+ { 
+ "question" : "Who was the male singer who performed as a special guest during Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XLIV", "Peyton Manning"],
+ "answers" : ["Bruno Mars", "Bruno Mars", "Bruno Mars,"]
+},
+ { 
+ "question" : "What ranking does the Super Bowl 50 halftime show have on the list of most watched TV broadcasts?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl XXXVIII halftime-show controversy", "Super Bowl XLII", "Super Bowl commercials"],
+ "answers" : ["third", "third", "third"]
+},
+ { 
+ "question" : "What station aired the Super Bowl?" ,
+ "doc_ids" : ["Super Bowl commercials", "Super Bowl", "Super Bowl XLII", "Super Bowl 50", "Super Bowl XLIV"],
+ "answers" : ["CBS", "CBS", "CBS"]
+},
+ { 
+ "question" : "What band headlined half-time during Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl commercials", "Super Bowl", "Super Bowl XLIV", "Peyton Manning"],
+ "answers" : ["Coldplay", "Coldplay", "Coldplay"]
+},
+ { 
+ "question" : "What two artists came out with Coldplay during the half-time show?" ,
+ "doc_ids" : ["Coldplay", "Joe Darone", "A Head Full of Dreams", "Chris Martin", "Yellow (Coldplay song)"],
+ "answers" : ["Beyoncé and Bruno Mars", "Beyoncé and Bruno Mars", "Beyoncé and Bruno Mars"]
+},
+ { 
+ "question" : "Who broadcast the Super Bowl on TV?" ,
+ "doc_ids" : ["Super Bowl", "Super Bowl commercials", "Super Bowl XLII", "Super Bowl XL", "Super Bowl XLVI"],
+ "answers" : ["CBS", "CBS", "CBS"]
+},
+ { 
+ "question" : "Who headlined the halftime show for Super Bowl 50?" ,
+ "doc_ids" : ["Super Bowl 50", "Super Bowl", "Super Bowl XXXVIII halftime-show controversy", "Super Bowl commercials", "Super Bowl XLIV"],
+ "answers" : ["Coldplay", "Coldplay", "Coldplay"]
+}
+] 
+ }
