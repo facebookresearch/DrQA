@@ -131,6 +131,7 @@ if __name__ == '__main__':
     closest_docs = ranker.batch_closest_docs(
         questions, k=args.n_docs, num_workers=args.num_workers
     )
+    
     answers_docs = zip(answers, closest_docs)
 
     # define processes

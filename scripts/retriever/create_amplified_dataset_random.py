@@ -131,16 +131,19 @@ def get_has_answer(answer_doc, match, PROCESS_DB, PROCESS_TOK, tokenizer):
         doc_id = doc_ids[i]
         paras, answ = split_and_check_hanswer(answer, doc_id, PROCESS_DB, PROCESS_TOK, tokenizer)
         if 1 in answ:
-            ret = []
-            temp = np.array(answ)
-            indexes = np.where(temp == 1)[0]
-            for i in indexes:
-                ret.append(paras[i])
-            count = 0
-            for i in range(len(paras)):
-                if i not in indexes and count < len(indexes):
-                    ret.append(paras[i])
-            return ret, answ
+            indexes = np.where(np.array(answ) == 1)[0]
+            positive = [paras[i] for i in indexes]
+            negative = []
+            neg_index = []
+            while len(negative) < len(positive):
+                index = np.random.randint(len(paras))
+                if index not in indexes+neg_index:
+                    negative.append(paras[index])
+                    neg_index.append(index)
+            ret = positive + negative
+            res = [1 if i < len(positive) else 0 for i in range(2*len(positive))]
+
+            return ret, res
 
     return [], []
 

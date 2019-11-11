@@ -12,6 +12,7 @@ import json
 import os
 import logging
 import importlib.util
+import uuid
 
 from multiprocessing import Pool as ProcessPool
 from tqdm import tqdm
@@ -24,18 +25,14 @@ console = logging.StreamHandler()
 console.setFormatter(fmt)
 logger.addHandler(console)
 
-
 # ------------------------------------------------------------------------------
 # Import helper
 # ------------------------------------------------------------------------------
-
-
 PREPROCESS_FN = None
-
 
 def init(filename):
     global PREPROCESS_FN
-    if filename:
+    if filename:    
         PREPROCESS_FN = import_module(filename).preprocess
 
 
@@ -68,7 +65,7 @@ def get_contents(filename):
     """Parse the contents of a file. Each line is a JSON encoded document."""
     global PREPROCESS_FN
     documents = []
-    with open(filename) as f:
+    with open(filename, encoding='utf-8') as f:
         for line in f:
             # Parse document
             doc = json.loads(line)
@@ -79,20 +76,26 @@ def get_contents(filename):
             if not doc:
                 continue
             # Add the document
-            documents.append((utils.normalize(doc['id']), doc['text']))
+            doc['text'] = doc['text'].strip("\n\n\n")
+            docs = doc['text'].split("\n\n")
+            for i in range(len(docs)):
+                docs[i] = docs[i].strip('\n').strip()	    
+                if docs[i].count(' ') > 10:
+                    documents.append((utils.normalize(doc['id']+ "_" + str(uuid.uuid4())), docs[i]))
+                if len(documents) < 1:
+                    continue		    
     return documents
-
 
 def store_contents(data_path, save_path, preprocess, num_workers=None):
     """Preprocess and store a corpus of documents in sqlite.
 
-    Args:
-        data_path: Root path to directory (or directory of directories) of files
-          containing json encoded documents (must have `id` and `text` fields).
-        save_path: Path to output sqlite db.
-        preprocess: Path to file defining a custom `preprocess` function. Takes
-          in and outputs a structured doc.
-        num_workers: Number of parallel processes to use when reading docs.
+    #Args:
+    #    data_path: Root path to directory (or directory of directories) of files
+    #      containing json encoded documents (must have `id` and `text` fields).
+    #    save_path: Path to output sqlite db.
+    #    preprocess: Path to file defining a custom `preprocess` function. Takes
+    #      in and outputs a structured doc.
+    #    num_workers: Number of parallel processes to use when reading docs.
     """
     if os.path.isfile(save_path):
         raise RuntimeError('%s already exists! Not overwriting.' % save_path)
@@ -133,5 +136,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     store_contents(
-        args.data_path, args.save_path, args.preprocess, args.num_workers
-    )
+        args.data_path, args.save_path, args.preprocess, args.num_workers)

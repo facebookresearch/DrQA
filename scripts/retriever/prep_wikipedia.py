@@ -10,7 +10,7 @@ import regex as re
 from html.parser import HTMLParser
 
 PARSER = HTMLParser()
-BLACKLIST = set(['23443579', '52643645'])  # Conflicting disambig. pages
+BLACKLIST = set() #set(['23443579', '52643645'])  # Conflicting disambig. pages
 
 
 def preprocess(article):
