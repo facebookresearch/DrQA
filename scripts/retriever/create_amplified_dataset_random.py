@@ -89,7 +89,7 @@ def recontruct_with_max_seq(paragraphs, tokenizer,  max_seq):
             to_add = to_add + temp
         else:
             ret.append(to_add)
-            to_add = ""
+            to_add = temp
     if len(to_add) > 1:
         ret.append(to_add)
     
@@ -127,25 +127,33 @@ def get_has_answer(answer_doc, match, PROCESS_DB, PROCESS_TOK, tokenizer):
     """Search through all the top docs to see if they have the answer."""
     answer, doc_ids, _ = answer_doc
     doc_ids = doc_ids[0]
+    ret = []
+    res = []
+    paras = []
+    answs = []
     for i in range(len(doc_ids)):
         doc_id = doc_ids[i]
-        paras, answ = split_and_check_hanswer(answer, doc_id, PROCESS_DB, PROCESS_TOK, tokenizer)
-        if 1 in answ:
-            indexes = np.where(np.array(answ) == 1)[0]
-            positive = [paras[i] for i in indexes]
-            negative = []
-            neg_index = []
-            while len(negative) < len(positive):
-                index = np.random.randint(len(paras))
-                if index not in indexes+neg_index:
-                    negative.append(paras[index])
-                    neg_index.append(index)
-            ret = positive + negative
-            res = [1 if i < len(positive) else 0 for i in range(2*len(positive))]
-
-            return ret, res
-
-    return [], []
+        para, answ = split_and_check_hanswer(answer, doc_id, PROCESS_DB, PROCESS_TOK, tokenizer)
+        paras += para
+        answs += answ
+    if 1 in answs:
+        indexes = np.where(np.array(answs) == 1)[0]
+        print(indexes)
+        positive = [paras[i] for i in indexes]
+        negative = []
+        neg_index = []
+        max_nb_try = 3*len(paras)
+        nb_try = 0
+        print(max_nb_try)
+        while len(negative) < len(positive) and nb_try < max_nb_try:
+            nb_try += 1
+            index = np.random.randint(len(paras))
+            if index not in indexes and index not in neg_index:
+                negative.append(paras[index])
+                neg_index.append(index)
+        ret += positive + negative
+        res += [1 if i < len(positive) else 0 for i in range(2*len(positive))]
+    return ret, res
 
 def getPredictions(samples):
     return [1 for i in range(len(samples))]
@@ -257,5 +265,5 @@ if __name__ == '__main__':
 
     print("saving dataset")
     print(len(amplified_Dataset))
-    with open('balanced_amp_para_squad1.1_train.json', 'w') as fp:
+    with open('random_balanced_amp_para_squad1.1_train.json', 'w') as fp:
         json.dump(amplified_Dataset, fp)
