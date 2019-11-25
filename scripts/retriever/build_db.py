@@ -17,6 +17,7 @@ import uuid
 from multiprocessing import Pool as ProcessPool
 from tqdm import tqdm
 from drqa.retriever import utils
+from transformers import BertTokenizer
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -29,7 +30,8 @@ logger.addHandler(console)
 # Import helper
 # ------------------------------------------------------------------------------
 PREPROCESS_FN = None
-
+TOKENIZER = None
+MAX_SEQ = 384
 def init(filename):
     global PREPROCESS_FN
     if filename:    
@@ -60,6 +62,27 @@ def iter_files(path):
     else:
         raise RuntimeError('Path %s is invalid' % path)
 
+def reconstruct_with_max_seq(docs, max_seq):
+    ret = []
+    to_add = ""
+    for temp in docs:
+        len_temp = len(TOKENIZER.tokenize(temp))
+        if len_temp > max_seq:
+            if len(to_add) > 1:
+                ret.append((str(uuid.uuid4()), to_add))
+                to_add = ""
+            ret.append((str(uuid.uuid4()), temp))
+        elif len(TOKENIZER.tokenize(to_add)) + len_temp <= max_seq:
+            to_add = to_add + temp 
+        else:
+            ret.append((str(uuid.uuid4()), to_add))
+            to_add = temp
+    if len(to_add) > 1:
+        ret.append((str(uuid.uuid4()), to_add))
+
+    return ret
+
+
 
 def get_contents(filename):
     """Parse the contents of a file. Each line is a JSON encoded document."""
@@ -78,12 +101,8 @@ def get_contents(filename):
             # Add the document
             doc['text'] = doc['text'].strip("\n\n\n")
             docs = doc['text'].split("\n\n")
-            for i in range(len(docs)):
-                docs[i] = docs[i].strip('\n').strip()	    
-                if docs[i].count(' ') > 10:
-                    documents.append((utils.normalize(doc['id']+ "_" + str(uuid.uuid4())), docs[i]))
-                if len(documents) < 1:
-                    continue		    
+            docs = reconstruct_with_max_seq(docs, MAX_SEQ)
+            documents += docs
     return documents
 
 def store_contents(data_path, save_path, preprocess, num_workers=None):
@@ -133,7 +152,11 @@ if __name__ == '__main__':
                               'a `preprocess` function'))
     parser.add_argument('--num-workers', type=int, default=None,
                         help='Number of CPU processes (for tokenizing, etc)')
+    parser.add_argument('--max-seq', type=int, default=384)
     args = parser.parse_args()
 
+    MAX_SEQ = args.max_seq
+    TOKENIZER = BertTokenizer.from_pretrained('bert-large-cased-whole-word-masking-finetuned-squad')
+    print(MAX_SEQ)
     store_contents(
         args.data_path, args.save_path, args.preprocess, args.num_workers)
