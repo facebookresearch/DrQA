@@ -41,11 +41,11 @@ from transformers import (
 
 class Reranker:
 
-    def __init__(self, model_type, model_path, max_seq):
+    def __init__(self, model_type, model_path, max_seq, batch_size=8):
         self.model_type = model_type
         self.model_path = model_path
         self.max_seq = max_seq
-
+        self.batch_size = batch_size
 
     def load_model(self):
         # load fined tuned model 

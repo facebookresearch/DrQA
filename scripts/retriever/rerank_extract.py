@@ -128,6 +128,8 @@ if __name__ == '__main__':
     preds = reranker.evaluate(samples)
 
     reranker = []
+    del reranker
+    torch.cuda.empty_cache()
 
     logger.info('Reader ...')
     reader = Reader(args.reader_model_type, args.reader_model_path, args.reader_output_dir)
