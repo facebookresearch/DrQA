@@ -114,7 +114,7 @@ if __name__ == '__main__':
     for doc_ids, _ in closest_docs:
         batch = []
         for doc_id in doc_ids:
-            text = db.get_doc_text(doc_id)
+            text = PROCESS_DB.get_doc_text(doc_id)
             batch.append((utils.normalize(text), doc_id))
         documents.append(batch)
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     uuid = 0
     for question, docs in zip(questions, documents):
         for doc, doc_id in docs:
-            samples.append(InputExample(guid=uuid, text_a=doc, text_b=questions, label='not_answerable'))
+            samples.append(InputExample(guid=uuid, text_a=doc, text_b=question, label='not_answerable'))
             uuid+=1
 
     preds = reranker.evaluate(samples)
