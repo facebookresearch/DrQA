@@ -41,7 +41,7 @@ from transformers import (
 
 class Reranker:
 
-    def __init__(self, model_type, model_path, max_seq, batch_size=512):
+    def __init__(self, model_type, model_path, max_seq, batch_size=256):
         self.model_type = model_type
         self.model_path = model_path
         self.max_seq = max_seq

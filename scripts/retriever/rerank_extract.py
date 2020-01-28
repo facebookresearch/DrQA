@@ -72,7 +72,6 @@ if __name__ == '__main__':
             choices=['regex', 'string'])
     args = parser.parse_args()
 
-    torch.cuda.set_device(1)
     # start time
     start = time.time()
 
@@ -109,7 +108,6 @@ if __name__ == '__main__':
     ranker = []
     reranker = Reranker(args.rerank_model_type, args.rerank_path, args.rerank_max_seq)
     reranker.load_model()
-    print(len(closest_docs))
     logger.info("reranking ...")
 
     documents = []
@@ -130,7 +128,6 @@ if __name__ == '__main__':
             uuid+=1
 
     preds = reranker.evaluate(samples)
-
     reranker = []
     del reranker
     torch.cuda.empty_cache()
@@ -140,8 +137,8 @@ if __name__ == '__main__':
     reader.load_model()
     
     preds_and_ids = []
-    for pred, doc in zip(preds, docs):
-        preds_and_ids.append(pred, doc[0])
+    for pred, doc in zip(preds, documents):
+        preds_and_ids.append((pred, doc[0]))
 
     squad_samples = []
     begin = 0
@@ -155,9 +152,9 @@ if __name__ == '__main__':
         to_sort.sort(key= lambda x: x[0], reverse=True)
         for doc in to_sort[0:min(args.rerank_n_docs, len(to_sort))]:
             squad_samples.append(SquadExample(
-                qas_id=i + '_' + uuid,
+                qas_id=str(i) + '_' + str(uuid),
                 question_text=questions[i],
-                context_text=doc[1],
+                context_text=doc[1][0],
                 answer_text='',
                 start_position_character=0,
                 title=''))

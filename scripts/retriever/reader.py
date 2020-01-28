@@ -52,9 +52,13 @@ MODEL_CLASSES = {
         "albert": (AlbertConfig, AlbertForQuestionAnswering, AlbertTokenizer),
         }
 
+
+def to_list(tensor):
+    return tensor.detach().cpu().tolist()
+
 class Reader:
 
-    def __init__(self, model_type, model_path, output_dir, batch_size=256, max_seq=384, max_answer_length=35, n_best_size=20, doc_stride=128, max_query_length=64, workers=2):
+    def __init__(self, model_type, model_path, output_dir, batch_size=256, max_seq=384, max_answer_length=35, n_best_size=20, doc_stride=128, max_query_length=64, workers=2, null_score_diff_threshold=0):
         self.model_type = model_type
         self.model_path = model_path
         self.output_dir= output_dir
@@ -65,6 +69,7 @@ class Reader:
         self.workers = workers
         self.batch_size= batch_size
         self.n_best_size = n_best_size
+        self.null_score_diff_threshold = null_score_diff_threshold
 
     def load_model(self):
 
@@ -90,8 +95,7 @@ class Reader:
                 doc_stride=self.doc_stride, 
                 max_query_length=self.max_query_length, 
                 is_training=False, 
-                return_dataset='pt',
-                threads=self.workers)
+                return_dataset='pt')
 
 
         sampler = SequentialSampler(dataset)
@@ -106,8 +110,8 @@ class Reader:
 
         all_results = []
 
-        for batch in tqdm(eval_dataloader, desc="Evaluating"):
-            batch = tuple(t.iterableto(device) for t in batch)
+        for batch in tqdm(dataloader, desc="Evaluating"):
+            batch = tuple(t.to(device) for t in batch)
 
             with torch.no_grad():
                 inputs = {
@@ -162,12 +166,9 @@ class Reader:
         output_prediction_file = os.path.join(self.output_dir, "predictions_{}.json".format(prefix))
         output_nbest_file = os.path.join(self.output_dir, "nbest_predictions_{}.json".format(prefix))
 
-        if args.version_2_with_negative:
-            output_null_log_odds_file = os.path.join(self.output_dir, "null_odds_{}.json".format(prefix))
-        else:
-            output_null_log_odds_file = None
+        output_null_log_odds_file = os.path.join(self.output_dir, "null_odds_{}.json".format(prefix))
         # XLNet and XLM use a more complex post-processing procedure
-        if args.model_type in ["xlnet", "xlm"]:
+        if self.model_type in ["xlnet", "xlm"]:
             start_n_top = self.model.config.start_n_top if hasattr(self.model, "config") else self.model.module.config.start_n_top
             end_n_top = self.model.config.end_n_top if hasattr(self.model, "config") else self.model.module.config.end_n_top
 
@@ -193,14 +194,13 @@ class Reader:
                     all_results,
                     self.n_best_size,
                     self.max_answer_length,
-                    self.do_lower_case,
+                    False,
                     output_prediction_file,
                     output_nbest_file,
                     output_null_log_odds_file,
-                    False,
                     True,
-                    self.null_score_diff_threshold,
-                    self.tokenizer,
+                    True,
+                    self.null_score_diff_threshold
                     )
 
             return predictions
