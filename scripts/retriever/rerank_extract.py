@@ -72,6 +72,7 @@ if __name__ == '__main__':
             choices=['regex', 'string'])
     args = parser.parse_args()
 
+    torch.cuda.set_device(1)
     # start time
     start = time.time()
 
@@ -140,7 +141,7 @@ if __name__ == '__main__':
     
     preds_and_ids = []
     for pred, doc in zip(preds, docs):
-        preds_and_ids.append(pre, doc[0])
+        preds_and_ids.append(pred, doc[0])
 
     squad_samples = []
     begin = 0
