@@ -127,7 +127,8 @@ if __name__ == '__main__':
             samples.append(InputExample(guid=uuid, text_a=doc, text_b=question, label='not_answerable'))
             uuid+=1
 
-    preds = reranker.evaluate(samples)
+    
+    preds = [0] * len(samples) #reranker.evaluate(samples)
     reranker = []
     del reranker
     torch.cuda.empty_cache()
@@ -136,9 +137,9 @@ if __name__ == '__main__':
     reader = Reader(args.reader_model_type, args.reader_path, args.reader_output_dir)
     reader.load_model()
     
-    preds_and_ids = []
-    for pred, doc in zip(preds, documents):
-        preds_and_ids.append((pred, doc[0]))
+    preds_and_docs = []
+    for index, pred in enumerate(preds):
+        preds_and_docs.append((pred, samples[index].text_a))
 
     squad_samples = []
     begin = 0
@@ -147,14 +148,14 @@ if __name__ == '__main__':
     for indice in docs_per_queston:
         uuid=0
         end+=1
-        to_sort = preds_and_ids[begin*indice:end*indice]
+        to_sort = preds_and_docs[begin*indice:end*indice]
         begin+=1
         to_sort.sort(key= lambda x: x[0], reverse=True)
         for doc in to_sort[0:min(args.rerank_n_docs, len(to_sort))]:
             squad_samples.append(SquadExample(
                 qas_id=str(i) + '_' + str(uuid),
                 question_text=questions[i],
-                context_text=doc[1][0],
+                context_text=doc[1],
                 answer_text='',
                 start_position_character=0,
                 title=''))
