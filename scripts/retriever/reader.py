@@ -54,7 +54,7 @@ MODEL_CLASSES = {
 
 class Reader:
 
-    def __init__(self, model_type, model_path, output_dir, batch_size=8, max_seq=384, max_answer_length=35, n_best_size=20, doc_stride=128, max_query_length=64, workers=2):
+    def __init__(self, model_type, model_path, output_dir, batch_size=256, max_seq=384, max_answer_length=35, n_best_size=20, doc_stride=128, max_query_length=64, workers=2):
         self.model_type = model_type
         self.model_path = model_path
         self.output_dir= output_dir
@@ -99,57 +99,61 @@ class Reader:
 
         return features, dataloader
 
-    def __get_predictions(self, dataloader, features, samples):
+    def __get_predictions(self, dataloader, features, samples, prefix=""):
         self.model.eval()
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        batch = tuple(t.iterableto(device) for t in batch)
 
-        with torch.no_grad():
-            inputs = {
-                    "input_ids": batch[0],
-                    "attention_mask": batch[1],
-                    "token_type_ids": batch[2],
-                    }
+        all_results = []
 
-            if self.model_type in ["xlm", "roberta", "distilbert"]:
-                del inputs["token_type_ids"]
+        for batch in tqdm(eval_dataloader, desc="Evaluating"):
+            batch = tuple(t.iterableto(device) for t in batch)
 
-            example_indices = batch[3]
+            with torch.no_grad():
+                inputs = {
+                        "input_ids": batch[0],
+                        "attention_mask": batch[1],
+                        "token_type_ids": batch[2],
+                        }
 
-            # XLNet and XLM use more arguments for their predictions
-            if self.model_type in ["xlnet", "xlm"]:
-                inputs.update({"cls_index": batch[4], "p_mask": batch[5]})
+                if self.model_type in ["xlm", "roberta", "distilbert"]:
+                    del inputs["token_type_ids"]
 
-            outputs = self.model(**inputs)
+                example_indices = batch[3]
 
-            for i, example_index in enumerate(example_indices):
-                eval_feature = features[example_index.item()]
-                unique_id = int(eval_feature.unique_id)
+                # XLNet and XLM use more arguments for their predictions
+                if self.model_type in ["xlnet", "xlm"]:
+                    inputs.update({"cls_index": batch[4], "p_mask": batch[5]})
 
-                output = [to_list(output[i]) for output in outputs]
+                outputs = self.model(**inputs)
 
-                # Some models (XLNet, XLM) use 5 arguments for their predictions, while the other "simpler"
-                # models only use two.
-                if len(output) >= 5:
-                    start_logits = output[0]
-                    start_top_index = output[1]
-                    end_logits = output[2]
-                    end_top_index = output[3]
-                    cls_logits = output[4]
+                for i, example_index in enumerate(example_indices):
+                    eval_feature = features[example_index.item()]
+                    unique_id = int(eval_feature.unique_id)
 
-                    result = SquadResult(
-                            unique_id,
-                            start_logits,
-                            end_logits,
-                            start_top_index=start_top_index,
-                            end_top_index=end_top_index,
-                            cls_logits=cls_logits,
-                            )
+                    output = [to_list(output[i]) for output in outputs]
 
-                else:
-                    start_logits, end_logits = output
-                    result = SquadResult(unique_id, start_logits, end_logits) 
+                    # Some models (XLNet, XLM) use 5 arguments for their predictions, while the other "simpler"
+                    # models only use two.
+                    if len(output) >= 5:
+                        start_logits = output[0]
+                        start_top_index = output[1]
+                        end_logits = output[2]
+                        end_top_index = output[3]
+                        cls_logits = output[4]
+
+                        result = SquadResult(
+                                unique_id,
+                                start_logits,
+                                end_logits,
+                                start_top_index=start_top_index,
+                                end_top_index=end_top_index,
+                                cls_logits=cls_logits,
+                                )
+
+                    else:
+                        start_logits, end_logits = output
+                        result = SquadResult(unique_id, start_logits, end_logits) 
 
                 all_results.append(result)
 
@@ -199,4 +203,4 @@ class Reader:
                     self.tokenizer,
                     )
 
-        return predictions
+            return predictions

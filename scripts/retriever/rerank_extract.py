@@ -108,11 +108,14 @@ if __name__ == '__main__':
     ranker = []
     reranker = Reranker(args.rerank_model_type, args.rerank_path, args.rerank_max_seq)
     reranker.load_model()
+    print(len(closest_docs))
     logger.info("reranking ...")
 
     documents = []
+    docs_per_queston = []
     for doc_ids, _ in closest_docs:
         batch = []
+        docs_per_queston.append(len(doc_ids))
         for doc_id in doc_ids:
             text = PROCESS_DB.get_doc_text(doc_id)
             batch.append((utils.normalize(text), doc_id))
@@ -132,28 +135,33 @@ if __name__ == '__main__':
     torch.cuda.empty_cache()
 
     logger.info('Reader ...')
-    reader = Reader(args.reader_model_type, args.reader_model_path, args.reader_output_dir)
+    reader = Reader(args.reader_model_type, args.reader_path, args.reader_output_dir)
     reader.load_model()
     
     preds_and_ids = []
     for pred, doc in zip(preds, docs):
-        preds_and_ids.append(pre, doc[1])
+        preds_and_ids.append(pre, doc[0])
 
     squad_samples = []
-    uuid = 0
-    for i in range(len(questions)):
-        indice = args.n_docs
-        to_sort = preds_and_ids[indice*i: indice*(i_1)]
+    begin = 0
+    end = 0
+    i = 0
+    for indice in docs_per_queston:
+        uuid=0
+        end+=1
+        to_sort = preds_and_ids[begin*indice:end*indice]
+        begin+=1
         to_sort.sort(key= lambda x: x[0], reverse=True)
-        for doc in to_sort[0:args.rerank_n_docs]:
+        for doc in to_sort[0:min(args.rerank_n_docs, len(to_sort))]:
             squad_samples.append(SquadExample(
-                qas_id=uuid,
+                qas_id=i + '_' + uuid,
                 question_text=questions[i],
-                context_text=[doc[0]],
+                context_text=doc[1],
                 answer_text='',
                 start_position_character=0,
                 title=''))
             uuid+=1
+        i+=1
 
     reader.evaluate(squad_samples)
 

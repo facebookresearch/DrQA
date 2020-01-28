@@ -6,7 +6,7 @@ import timeit
 
 import numpy as np
 import torch
-from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
 
 from tqdm import tqdm, trange
 
@@ -41,7 +41,7 @@ from transformers import (
 
 class Reranker:
 
-    def __init__(self, model_type, model_path, max_seq, batch_size=8):
+    def __init__(self, model_type, model_path, max_seq, batch_size=512):
         self.model_type = model_type
         self.model_path = model_path
         self.max_seq = max_seq
@@ -71,7 +71,7 @@ class Reranker:
         preds = []
         Softmax = torch.nn.Softmax(1)
 
-        for input_ids, input_mask, segment_ids, label_ids in dataloader:
+        for input_ids, input_mask, segment_ids, label_ids in tqdm(dataloader, desc="Evaluating"):
             input_ids = input_ids.to(device)
             input_mask = input_mask.to(device)
             segment_ids = segment_ids.to(device)
