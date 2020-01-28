@@ -131,33 +131,33 @@ class Reader:
 
                 outputs = self.model(**inputs)
 
-                for i, example_index in enumerate(example_indices):
-                    eval_feature = features[example_index.item()]
-                    unique_id = int(eval_feature.unique_id)
+            for i, example_index in enumerate(example_indices):
+                eval_feature = features[example_index.item()]
+                unique_id = int(eval_feature.unique_id)
 
-                    output = [to_list(output[i]) for output in outputs]
+                output = [to_list(output[i]) for output in outputs]
 
-                    # Some models (XLNet, XLM) use 5 arguments for their predictions, while the other "simpler"
-                    # models only use two.
-                    if len(output) >= 5:
-                        start_logits = output[0]
-                        start_top_index = output[1]
-                        end_logits = output[2]
-                        end_top_index = output[3]
-                        cls_logits = output[4]
+                # Some models (XLNet, XLM) use 5 arguments for their predictions, while the other "simpler"
+                # models only use two.
+                if len(output) >= 5:
+                    start_logits = output[0]
+                    start_top_index = output[1]
+                    end_logits = output[2]
+                    end_top_index = output[3]
+                    cls_logits = output[4]
+                    
+                    result = SquadResult(
+                            unique_id,
+                            start_logits,
+                            end_logits,
+                            start_top_index=start_top_index,
+                            end_top_index=end_top_index,
+                            cls_logits=cls_logits,
+                            )
 
-                        result = SquadResult(
-                                unique_id,
-                                start_logits,
-                                end_logits,
-                                start_top_index=start_top_index,
-                                end_top_index=end_top_index,
-                                cls_logits=cls_logits,
-                                )
-
-                    else:
-                        start_logits, end_logits = output
-                        result = SquadResult(unique_id, start_logits, end_logits) 
+                else:
+                    start_logits, end_logits = output
+                    result = SquadResult(unique_id, start_logits, end_logits) 
 
                 all_results.append(result)
 
@@ -198,7 +198,7 @@ class Reader:
                     output_prediction_file,
                     output_nbest_file,
                     output_null_log_odds_file,
-                    True,
+                    False,
                     True,
                     self.null_score_diff_threshold
                     )

@@ -161,5 +161,6 @@ if __name__ == '__main__':
             uuid+=1
         i+=1
 
+    print(len(squad_samples))
     reader.evaluate(squad_samples)
 
