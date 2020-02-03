@@ -77,7 +77,8 @@ class Reranker:
             segment_ids = segment_ids.to(device)
             label_ids = label_ids.to(device)
             with torch.no_grad():
-                logits = self.model(input_ids, segment_ids, input_mask, labels=None)[0]
+                output  = self.model(input_ids, segment_ids, input_mask, labels=None)
+                logits = output[0]
                 logits = Softmax(logits) 
             if len(preds) == 0:
                 preds.append(logits.detach().cpu().numpy())

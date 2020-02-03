@@ -35,6 +35,66 @@ from transformers import SquadExample
 logger = logging.getLogger(__name__)
 
 
+
+PROCESS_TOK = None
+PROCESS_DB = None
+
+
+def init(tokenizer_class, tokenizer_opts, db_class, db_opts):
+    global PROCESS_TOK, PROCESS_DB
+    PROCESS_TOK = tokenizer_class(**tokenizer_opts)
+    Finalize(PROCESS_TOK, PROCESS_TOK.shutdown, exitpriority=100)
+    PROCESS_DB = db_class(**db_opts)
+    Finalize(PROCESS_DB, PROCESS_DB.close, exitpriority=100)
+
+
+def regex_match(text, pattern):
+    """Test if a regex pattern is contained within a text."""
+    try:
+        pattern = re.compile(
+            pattern,
+            flags=re.IGNORECASE + re.UNICODE + re.MULTILINE,
+        )
+    except BaseException:
+        return False
+    return pattern.search(text) is not None
+
+
+def has_answer(answer, doc_id, match):
+    """Check if a document contains an answer string.
+
+    If `match` is string, token matching is done between the text and answer.
+    If `match` is regex, we search the whole text with the regex.
+    """
+    global PROCESS_DB, PROCESS_TOK
+    text = PROCESS_DB.get_doc_text(doc_id)
+    text = utils.normalize(text)
+    if match == 'string':
+        # Answer is a list of possible strings
+        text = PROCESS_TOK.tokenize(text).words(uncased=True)
+        for single_answer in answer:
+            single_answer = utils.normalize(single_answer)
+            single_answer = PROCESS_TOK.tokenize(single_answer)
+            single_answer = single_answer.words(uncased=True)
+            for i in range(0, len(text) - len(single_answer) + 1):
+                if single_answer == text[i: i + len(single_answer)]:
+                    return True
+    elif match == 'regex':
+        # Answer is a regex
+        single_answer = utils.normalize(answer[0])
+        if regex_match(text, single_answer):
+            return True
+    return False
+
+
+def get_score(answer_doc, match):
+    """Search through all the top docs to see if they have the answer."""
+    answer, doc_ids = answer_doc
+    for doc_id in doc_ids:
+        if has_answer(answer, doc_id, match):
+            return 1
+    return 0
+
 # ------------------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------------------
@@ -88,8 +148,6 @@ if __name__ == '__main__':
         questions.append(question)
         answers.append(answer)
 
-    questions = questions[0:1]
-    answers = answers[0:1]
     # get the closest docs for each question.
     logger.info('Initializing ranker...')
     ranker = retriever.get_class('tfidf')(tfidf_path=args.tfidf)
@@ -114,6 +172,7 @@ if __name__ == '__main__':
     logger.info("reranking ...")
 
     documents = []
+    ids = []
     docs_per_queston = []
     for doc_ids, _ in closest_docs:
         batch = []
@@ -121,6 +180,7 @@ if __name__ == '__main__':
         for doc_id in doc_ids:
             text = PROCESS_DB.get_doc_text(doc_id)
             batch.append((utils.normalize(text), doc_id))
+            ids.append(doc_id)
         documents.append(batch)
 
     samples = []
@@ -136,41 +196,61 @@ if __name__ == '__main__':
     del reranker
     torch.cuda.empty_cache()
 
-    logger.info('Reader ...')
-    reader = Reader(args.reader_model_type, args.reader_path, args.reader_output_dir)
-    reader.load_model()
-    
     preds_and_docs = []
-    for index, pred in enumerate(preds):
-        preds_and_docs.append((pred, samples[index].text_a))
+    for pred, doc_id in zip(preds, ids):
+        preds_and_docs.append((pred, doc_id))
 
-    squad_samples = []
     save = []
     begin = 0
     end = 0
     i = 0
+    reranked_docs = []
     for indice in docs_per_queston:
-        uuid=0
         end+=1
         to_sort = preds_and_docs[begin*indice:end*indice]
         begin+=1
         to_sort.sort(key= lambda x: x[0], reverse=True)
         save.append(to_sort)
+        batch = []
         for doc in to_sort[0:min(args.rerank_n_docs, len(to_sort))]:
-            squad_samples.append(SquadExample(
-                qas_id=str(i) + '_' + str(uuid),
-                question_text=questions[i],
-                context_text=doc[1],
-                answer_text='',
-                start_position_character=0,
-                title=''))
-            uuid+=1
-        i+=1
+            batch.append(doc[1]),
+        reranked_docs.append(batch)
 
 
-    with open(os.path.join(args.save_dir, "preds"), 'wb') as fp:
-        pickle.dump(preds, fp)
-    with open(os.path.join(args.save_dir, "reranked_samples"), 'wb') as fp:
-        pickle.dump(save, fp)
-    #reader.evaluate(squad_samples)
 
+    answers_docs = zip(answers, reranked_docs)
+
+    # define processes
+    tok_class = tokenizers.get_class(args.tokenizer)
+    tok_opts = {}
+    db_class = retriever.DocDB
+    db_opts = {'db_path': args.doc_db}
+    processes = ProcessPool(
+        processes=args.num_workers,
+        initializer=init,
+        initargs=(tok_class, tok_opts, db_class, db_opts)
+    )
+
+    # compute the scores for each pair, and print the statistics
+    logger.info('Retrieving and computing scores...')
+    get_score_partial = partial(get_score, match=args.match)
+    scores = processes.map(get_score_partial, answers_docs)
+
+    filename = os.path.basename(args.dataset)
+    stats = (
+        "\n" + "-" * 50 + "\n" +
+        "{filename}\n" +
+        "Examples:\t\t\t{total}\n" +
+        "Matches in top {k}:\t\t{m}\n" +
+        "Match % in top {k}:\t\t{p:2.2f}\n" +
+        "Total time:\t\t\t{t:2.4f} (s)\n"
+    ).format(
+        filename=filename,
+        total=len(scores),
+        k=args.rerank_n_docs,
+        m=sum(scores),
+        p=(sum(scores) / len(scores) * 100),
+        t=time.time() - start,
+    )
+
+    print(stats)
