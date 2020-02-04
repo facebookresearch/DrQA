@@ -13,6 +13,7 @@ import os
 import logging
 import importlib.util
 import uuid
+import regex
 
 from multiprocessing import Pool as ProcessPool
 from tqdm import tqdm
@@ -62,23 +63,26 @@ def iter_files(path):
     else:
         raise RuntimeError('Path %s is invalid' % path)
 
-def reconstruct_with_max_seq(docs, max_seq):
+def reconstruct_with_max_seq(doc, max_seq):
     ret = []
-    to_add = ""
-    for temp in docs:
-        len_temp = len(TOKENIZER.tokenize(temp))
-        if len_temp > max_seq:
-            if len(to_add) > 1:
-                ret.append((str(uuid.uuid4()), to_add))
-                to_add = ""
-            ret.append((str(uuid.uuid4()), temp))
-        elif len(TOKENIZER.tokenize(to_add)) + len_temp <= max_seq:
-            to_add = to_add + temp 
-        else:
-            ret.append((str(uuid.uuid4()), to_add))
-            to_add = temp
-    if len(to_add) > 1:
-        ret.append((str(uuid.uuid4()), to_add))
+    to_add = []
+    len_to_add = 0
+    for split in regex.split(r'\n+', doc) :
+        split = split.strip()
+        if len(split) == 0:
+            continue
+    
+        len_split = len(TOKENIZER.tokenize(split))
+        if len(to_add) > 0 and len_to_add + len_split > max_seq:
+            ret.append((str(uuid.uuid4()), ' '.join(to_add)))
+            to_add = []
+            len_to_add = 0
+        
+        to_add.append(split)
+        len_to_add += len_split
+
+    if len(to_add) > 0:
+        ret.append((str(uuid.uuid4()), ' '.join(to_add)))
 
     return ret
 
@@ -99,9 +103,8 @@ def get_contents(filename):
             if not doc:
                 continue
             # Add the document
-            doc['text'] = doc['text'].strip("\n\n\n")
-            docs = doc['text'].split("\n\n")
-            docs = reconstruct_with_max_seq(docs, MAX_SEQ)
+            doc = doc['text']
+            docs = reconstruct_with_max_seq(doc, MAX_SEQ)
             documents += docs
     return documents
 
