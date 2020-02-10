@@ -81,6 +81,9 @@ class Reader:
 
         self.model.to(device)
 
+    def get_tokenizer(self):
+        return self.tokenizer
+
     def evaluate(self, samples):
         if self.model is None or self.tokenizer is None:
             return []

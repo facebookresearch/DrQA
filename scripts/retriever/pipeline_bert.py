@@ -35,7 +35,7 @@ from transformers import SquadExample
 logger = logging.getLogger(__name__)
 
 
-def reconstruct_with_max_seq(doc, max_seq):
+def reconstruct_with_max_seq(doc, max_seq, tokenizer):
     ret = []
     to_add = []
     len_to_add = 0
@@ -44,7 +44,7 @@ def reconstruct_with_max_seq(doc, max_seq):
         if len(split) == 0:
             continue
     
-        len_split = len(TOKENIZER.tokenize(split))
+        len_split = len(tokenizer.tokenize(split))
         if len(to_add) > 0 and len_to_add + len_split > max_seq:
             ret.append(' '.join(to_add))
             to_add = []
@@ -129,12 +129,18 @@ if __name__ == '__main__':
 
     del ranker
 
+    logger.info('Initializing Reader...')
+    reader = Reader(args.reader_model_type, args.reader_path, args.reader_output_dir)
+    reader.load_model()
+    tokenizer = reader.get_tokenizer()
+
+    logger.info('Splittind documents into passages...')
     documents = []
     docs_per_queston = []
     for doc_ids, _ in closest_docs:
         doc_id = doc_ids[0]
         text = PROCESS_DB.get_doc_text(doc_id)
-        passages = reconstruct_with_max_seq(text, args.max_seq)
+        passages = reconstruct_with_max_seq(text, args.max_seq, tokenizer)
         docs_per_queston.append(len(passages))
         documents.append([p for p in passages])
 
@@ -148,14 +154,13 @@ if __name__ == '__main__':
     
     preds =[0]*len(samples)
 
-    logger.info('Reader ...')
-    reader = Reader(args.reader_model_type, args.reader_path, args.reader_output_dir)
-    reader.load_model()
     
     preds_and_docs = []
     for index, pred in enumerate(preds):
         preds_and_docs.append((pred, samples[index].text_a))
 
+
+    logger.info('preparing data for extraction...')
     squad_samples = []
     save = []
     begin = 0
@@ -179,5 +184,6 @@ if __name__ == '__main__':
         q_id+=1
 
 
+    logger.info('Evaluating...')
     reader.evaluate(squad_samples)
 
