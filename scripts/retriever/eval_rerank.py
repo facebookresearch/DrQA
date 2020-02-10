@@ -187,7 +187,7 @@ if __name__ == '__main__':
     uuid = 0
     for question, docs in zip(questions, documents):
         for doc, doc_id in docs:
-            samples.append(InputExample(guid=uuid, text_a=doc, text_b=question, label='not_answerable'))
+            samples.append(InputExample(guid=uuid, text_a=question, text_b=doc, label='not_answerable'))
             uuid+=1
 
     

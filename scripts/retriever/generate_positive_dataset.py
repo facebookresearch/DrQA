@@ -22,7 +22,6 @@ from drqa import retriever, tokenizers
 from drqa.retriever import utils
 
 from question_classifier.input_example import InputExample
-from transformers import BertTokenizer
 # ------------------------------------------------------------------------------
 # Multiprocessing target functions.
 # ------------------------------------------------------------------------------
@@ -39,39 +38,53 @@ def init(tokenizer_class, tokenizer_opts, db_class, db_opts):
     Finalize(PROCESS_DB, PROCESS_DB.close, exitpriority=100)
 
 
-def reconstruct_with_max_seq(doc, max_seq, tokenizer):
-    ret = []
-    count = 0
-    to_add = []
-    len_to_add = 0
-    for split in regex.split(r'\n+', doc) :
-        split = split.strip()
-        if len(split) == 0:
-            continue
+def regex_match(text, pattern):
+    """Test if a regex pattern is contained within a text."""
+    try:
+        pattern = re.compile(
+            pattern,
+            flags=re.IGNORECASE + re.UNICODE + re.MULTILINE,
+        )
+    except BaseException:
+        return False
+    return pattern.search(text) is not None
+
+def check_has_answer(answer, doc_ids, PROCESS_DB, PROCESS_TOK):
+
+    paragraphs = [utils.normalize(PROCESS_DB.get_doc_text(doc_id)) for doc_id in doc_ids]
     
-        len_split = len(tokenizer.tokenize(split))
-        if len(to_add) > 0 and len_to_add + len_split > max_seq:
-            to_add = []
-            len_to_add = 0
-            count+=1
-        
-        to_add.append(split)
-        len_to_add += len_split
+    has_answ = []
+    for paragraph in paragraphs:
+        has_answ.append(check_ans(answer, paragraph, PROCESS_TOK))
 
-    if len(to_add) > 0:
-        count+=1
+    return paragraphs, has_answ
 
-    return count
+def check_ans(answer, paragraph, tokenizer):
 
-def get_has_answer(answer_doc, match, PROCESS_DB, PROCESS_TOK, tokenizer):
+    text = tokenizer.tokenize(paragraph).words(uncased=True)
+    for single_answer in answer:
+        single_answer = utils.normalize(single_answer)
+        single_answer = PROCESS_TOK.tokenize(single_answer)
+        single_answer = single_answer.words(uncased=True)
+            
+        for i in range(0, len(text) - len(single_answer) + 1):
+            if  single_answer == text[i: i + len(single_answer)]:
+                return 1
+    return 0
+
+
+def get_has_answer(answer_doc, match, PROCESS_DB, PROCESS_TOK):
     """Search through all the top docs to see if they have the answer."""
     answer, doc_ids, _ = answer_doc
     doc_ids = doc_ids[0]
-    n_paras = 0
-    for doc_id in doc_ids:
-        text = PROCESS_DB.get_doc_text(doc_id)
-        n_paras+=reconstruct_with_max_seq(text, 384, tokenizer)
-    return n_paras
+    ret = []
+    res = []
+    paras, answs = check_has_answer(answer, doc_ids, PROCESS_DB, PROCESS_TOK) 
+    if set([1]).issubset(set(answs)):
+        pos_indexes = np.where(np.array(answs) == 1)[0]
+        ret = [paras[i] for i in pos_indexes]
+    return ret
+
 
 # ------------------------------------------------------------------------------
 # Main
@@ -92,8 +105,9 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str, default=None)
     parser.add_argument('--doc-db', type=str, default=None,
                         help='Path to Document DB')
-    parser.add_argument('--tokenizer', type=str, default='regexp')
     parser.add_argument('--n-docs', type=int, default=5)
+    parser.add_argument('--tokenizer', type=str, default='regexp')
+    parser.add_argument('--save-dir', type=str, default=None)
     parser.add_argument('--num-workers', type=int, default=1)
     parser.add_argument('--match', type=str, default='string',
                         choices=['regex', 'string'])
@@ -124,7 +138,6 @@ if __name__ == '__main__':
     closest_docs = ranker.batch_closest_docs(
         questions, k=args.n_docs, num_workers=args.num_workers
     )
-    ranker = []
 
     tok_class = tokenizers.get_class(args.tokenizer)
     tok_opts = {}
@@ -141,12 +154,20 @@ if __name__ == '__main__':
     logger.info('Retrieving texts and computing scores...')
     has_answers = []
 
-    
-    tokenizer = BertTokenizer.from_pretrained('bert-large-cased-whole-word-masking-finetuned-squad')
     amplified_Dataset = []
-    lens = []
     for answer_doc in answers_docs:
-        paras = (get_has_answer(answer_doc, args.match, PROCESS_DB, PROCESS_TOK, tokenizer))
-        lens.append(paras)
+        paras = (get_has_answer(answer_doc, args.match, PROCESS_DB, PROCESS_TOK))
+        if len(paras) > 0:
+            amplified_Dataset.append({
+                        "question" : answer_doc[2], 
+                        "contexts" : paras, 
+                        "answers" : answer_doc[0]})
 
-    print(np.around(np.mean(lens)))
+    print("saving dataset")
+    print(len(amplified_Dataset))
+    basename = os.path.basename(args.dataset)
+    dataset_name, _ = os.path.splitext(basename)
+    file_name= 'positive_' + dataset_name + '.json'
+    with open(os.path.join(args.save_dir, file_name) , 'w') as fp:
+        json.dump(amplified_Dataset, fp)
+
