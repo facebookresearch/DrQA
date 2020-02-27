@@ -97,7 +97,7 @@ def process(question, candidates=None, top_n=1, n_docs=5):
 
 
 banner = """
-Interactive DrQA
+Interactive TrQA
 >> process(question, candidates=None, top_n=1, n_docs=5)
 >> usage()
 """
