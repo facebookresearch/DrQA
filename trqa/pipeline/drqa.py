@@ -74,7 +74,7 @@ class DrQA(object):
             cuda=True,
             data_parallel=False,
             max_loaders=5,
-            num_workers=None,
+            num_workers=1,
             db_config=None,
             ranker_config=None
     ):
@@ -248,7 +248,6 @@ class DrQA(object):
                             'pos': s_tokens[sidx].pos(),
                             'ner': s_tokens[sidx].entities(),
                         })
-
         logger.info('Reading %d paragraphs...' % len(examples))
 
         # Push all examples through the document reader.
@@ -285,7 +284,7 @@ class DrQA(object):
                     else:
                         heapq.heappushpop(queue, item)
 
-        # Arrange final top prediction data.
+        # Arrange final top prediction data
         all_predictions = []
         for queue in queues:
             predictions = []

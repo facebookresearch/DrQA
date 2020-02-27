@@ -15,7 +15,7 @@ import importlib.util
 
 from multiprocessing import Pool as ProcessPool
 from tqdm import tqdm
-from drqa.retriever import utils
+from trqa.retriever import utils
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

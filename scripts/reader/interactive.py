@@ -13,7 +13,7 @@ import logging
 import prettytable
 import time
 
-from drqa.reader import Predictor
+from trqa.reader import Predictor
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

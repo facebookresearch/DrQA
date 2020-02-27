@@ -18,8 +18,8 @@ from multiprocessing.util import Finalize
 from functools import partial
 from collections import Counter
 
-from drqa import retriever
-from drqa import tokenizers
+from trqa import retriever
+from trqa import tokenizers
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

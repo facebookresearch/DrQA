@@ -28,9 +28,9 @@ from nltk.tokenize import word_tokenize
 from nltk.chunk import ne_chunk
 from nltk.tag import pos_tag
 
-from drqa import tokenizers
-from drqa import retriever
-from drqa.retriever import utils
+from trqa import tokenizers
+from trqa import retriever
+from trqa.retriever import utils
 
 logger = logging.getLogger()
 

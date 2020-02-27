@@ -18,9 +18,9 @@ with open('requirements.txt') as f:
     reqs = f.read()
 
 setup(
-    name='drqa',
-    version='0.1.0',
-    description='Reading Wikipedia to Answer Open-Domain Questions',
+    name='trqa',
+    version='0.0.0',
+    description='Reading Wikipedia to Answer Open-Domain Questions with transformers',
     long_description=readme,
     license=license,
     python_requires='>=3.5',

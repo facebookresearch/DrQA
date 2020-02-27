@@ -13,8 +13,8 @@ import json
 import argparse
 import logging
 
-from drqa import pipeline
-from drqa.retriever import utils
+from trqa import pipeline
+from trqa.retriever import utils
 
 
 logger = logging.getLogger()

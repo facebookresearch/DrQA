@@ -16,8 +16,8 @@ import os
 from multiprocessing import Pool as ProcessPool
 from multiprocessing.util import Finalize
 from functools import partial
-from drqa import retriever, tokenizers
-from drqa.retriever import utils
+from trqa import retriever, tokenizers
+from trqa.retriever import utils
 
 # ------------------------------------------------------------------------------
 # Multiprocessing target functions.

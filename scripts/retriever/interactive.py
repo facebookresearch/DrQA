@@ -10,7 +10,7 @@ import argparse
 import code
 import prettytable
 import logging
-from drqa import retriever
+from trqa import retriever
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

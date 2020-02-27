@@ -14,7 +14,6 @@ import logging
 
 from termcolor import colored
 from trqa import pipeline
-from trqa.retriever import utils
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -49,25 +48,21 @@ if args.cuda:
 else:
     logger.info('Running on CPU only.')
 
-if args.candidate_file:
-    logger.info('Loading candidates from %s' % args.candidate_file)
-    candidates = set()
-    with open(args.candidate_file) as f:
-        for line in f:
-            line = utils.normalize(line.strip()).lower()
-            candidates.add(line)
-    logger.info('Loaded %d candidates.' % len(candidates))
-else:
-    candidates = None
-
 logger.info('Initializing pipeline...')
-DrQA = pipeline.DrQA(
+TrQA = pipeline.TrQA(
     cuda=args.cuda,
-    fixed_candidates=candidates,
-    reader_model=args.reader_model,
+    fixed_candidates=None,
     ranker_config={'options': {'tfidf_path': args.retriever_model}},
     db_config={'options': {'db_path': args.doc_db}},
-    tokenizer=args.tokenizer
+    tokenizer=args.tokenizer,
+    batch_size=128,
+    num_workers=1,
+    ranker_label_list=['0', '1'],
+    ranker_output_mode='classification',
+    per_gpu_eval_batch_size=2,
+    reader_lang_id=0,
+    reader_n_best_size=20,
+    reader_max_answer_length=1000,
 )
 
 
@@ -77,7 +72,7 @@ DrQA = pipeline.DrQA(
 
 
 def process(question, candidates=None, top_n=1, n_docs=5):
-    predictions = DrQA.process(
+    predictions = TrQA.process(
         question, candidates, top_n, n_docs, return_context=True
     )
     table = prettytable.PrettyTable(

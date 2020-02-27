@@ -16,9 +16,9 @@ import subprocess
 import logging
 
 
-from drqa.reader import utils, vector, config, data
-from drqa.reader import DocReader
-from drqa import DATA_DIR as DRQA_DATA
+from trqa.reader import utils, vector, config, data
+from trqa.reader import DocReader
+from trqa import DATA_DIR as DRQA_DATA
 
 logger = logging.getLogger()
 
@@ -30,7 +30,7 @@ logger = logging.getLogger()
 
 # Defaults
 DATA_DIR = os.path.join(DRQA_DATA, 'datasets')
-MODEL_DIR = '/tmp/drqa-models/'
+MODEL_DIR = '/tmp/trqa-models/'
 EMBED_DIR = os.path.join(DRQA_DATA, 'embeddings')
 
 def str2bool(v):

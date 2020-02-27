@@ -8,8 +8,8 @@
 
 import argparse
 import json
-from drqa.retriever.utils import normalize
-from drqa.reader.utils import (
+from trqa.retriever.utils import normalize
+from trqa.reader.utils import (
     exact_match_score,
     regex_match_score,
     metric_max_over_ground_truths
