@@ -11,7 +11,9 @@ import code
 import argparse
 import logging
 import prettytable
-import time
+import time, os, sys
+
+sys.path.append(os.path.abspath('/home/vishal/shashi_MTP/DrQA'))
 
 from drqa.reader import Predictor
 

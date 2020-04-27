@@ -1,0 +1,64 @@
+
+############################### HINDI ################################
+
+Train:
+------
+python scripts/reader/train.py --embedding-file glove.840B.300d.txt --tune-partial 1000 --model-dir models/hindi --data-dir data/datasets/hindi --train-file train-processed-simple.txt --dev-file dev-processed-simple.txt --dev-json dev.json --embed-dir data/embeddings/hindi --use-pos False --use-ner False --use-lemma False
+
+Predict:
+--------
+python scripts/reader/predict.py data/datasets/hindi/test.json --model models/hindi/20200411-ab4e9e80.mdl --embedding-file data/embeddings/hindi/glove.840B.300d.txt --out-dir data/datasets/hindi --tokenizer simple --official
+
+Evaluate:
+---------
+python scripts/reader/official_eval.py data/datasets/hindi/test.json data/datasets/hindi/test-20200411-ab4e9e80.preds
+
+*************************************************************************
+
+############################### BENGALI ################################
+
+Train:
+--------------
+python scripts/reader/train.py --embedding-file glove.840B.300d.txt --tune-partial 1000 --model-dir models/bengali --data-dir data/datasets/bengali --train-file train-processed-simple.txt --dev-file dev-processed-simple.txt --dev-json dev.json --embed-dir data/embeddings/bengali --use-pos False --use-ner False --use-lemma False
+
+Predict:
+-------------
+python scripts/reader/predict.py data/datasets/bengali/test.json --model models/bengali/20200411-4b58e7f8.mdl --embedding-file data/embeddings/bengali/glove.840B.300d.txt --out-dir data/datasets/bengali --tokenizer simple --official
+
+Evaluate:
+---------
+python scripts/reader/official_eval.py data/datasets/bengali/test.json data/datasets/bengali/test-20200411-4b58e7f8.preds
+
+*************************************************************************
+
+################################ HINDI - ENGLISH ########################
+
+Train:
+------
+python scripts/reader/train.py --embedding-file Hi_EN_MAPPED.EMB --tune-partial 1000 --model-dir models/hindi_english --data-dir data/datasets/hindi_english --train-file train-processed-simple.txt --dev-file dev-processed-simple.txt --dev-json dev.json --embed-dir data/embeddings/hindi_english --use-pos False --use-ner False --use-lemma False
+
+Predict:
+--------
+python scripts/reader/predict.py data/datasets/hindi_english/test.json --model models/hindi_english/20200414-67a31a67.mdl --embedding-file data/embeddings/hindi_english/Hi_EN_MAPPED.EMB --out-dir data/datasets/hindi_english --tokenizer simple --official
+
+Evaluate:
+---------
+python scripts/reader/official_eval.py data/datasets/hindi_english/test.json data/datasets/hindi_english/test-20200414-67a31a67.preds
+
+***************************************************************************
+
+########################## BENGALI - ENGLISH ##############################
+
+Train:
+------
+python scripts/reader/train.py --embedding-file BEN_EN_MAPPED.EMB --tune-partial 1000 --model-dir models/bengali_english --data-dir data/datasets/bengali_english --train-file train-processed-simple.txt --dev-file dev-processed-simple.txt --dev-json dev.json --embed-dir data/embeddings/bengali_english --use-pos False --use-ner False --use-lemma False
+
+Predict:
+--------
+python scripts/reader/predict.py data/datasets/bengali_english/test.json --model models/bengali_english/<<file.mdl>> --embedding-file data/embeddings/bengali_english/BEN_EN_MAPPED.EMB --out-dir data/datasets/bengali_english --tokenizer simple --official
+
+Evaluate:
+---------
+python scripts/reader/official_eval.py data/datasets/bengali_english/test.json data/datasets/bengali_english/test-<<file>>.preds
+
+*************************************************************************
