@@ -11,8 +11,11 @@ import os
 import sys
 import json
 import time
+import pathlib
 
-sys.path.append(os.path.abspath('/home/vishal/shashi_MTP/DrQA'))
+dir1 = pathlib.Path(__file__).parent.absolute()
+sys.path.append(os.path.abspath('/'.join (dir1.split ('/')[ : -2 ])))
+
 from multiprocessing import Pool
 from multiprocessing.util import Finalize
 from functools import partial

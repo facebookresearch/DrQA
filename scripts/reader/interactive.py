@@ -13,7 +13,11 @@ import logging
 import prettytable
 import time, os, sys
 
-sys.path.append(os.path.abspath('/home/vishal/shashi_MTP/DrQA'))
+import pathlib
+
+dir1 = pathlib.Path(__file__).parent.absolute()
+
+sys.path.append(os.path.abspath('/'.join (dir1.split ('/')[ : -2 ])))
 
 from drqa.reader import Predictor
 

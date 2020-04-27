@@ -12,8 +12,11 @@ import torch
 import argparse
 import logging
 import json
+import pathlib
 
-sys.path.append(os.path.abspath('/home/vishal/shashi_MTP/DrQA'))
+dir1 = pathlib.Path(__file__).parent.absolute()
+
+sys.path.append(os.path.abspath('/'.join (dir1.split ('/')[ : -2 ])))
 
 from tqdm import tqdm
 from drqa.reader import Predictor
