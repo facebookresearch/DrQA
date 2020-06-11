@@ -19,9 +19,7 @@ from multiprocessing.util import Finalize
 from functools import partial
 from drqa import retriever, tokenizers
 from drqa.retriever import utils
-from question_classifier.input_example import InputExample
-from question_classifier import utils as bert_utils
-from reader import Reader
+from transformers.data.processors.utils import InputExample
 from reranker import Reranker
 
 import torch
@@ -124,11 +122,6 @@ if __name__ == '__main__':
     parser.add_argument('--rerank-max-seq', type=int, default=384)
     parser.add_argument('--rerank-n-docs', type=int, default=20)
 
-    parser.add_argument('--reader-model-type', type=str, default=None)
-    parser.add_argument('--reader-path', type=str, default=None)
-    parser.add_argument('--reader-output-dir', type=str, default=None)
-    
-    parser.add_argument('--save-dir', type=str, default=None)
     parser.add_argument('--match', type=str, default='string',
             choices=['regex', 'string'])
     args = parser.parse_args()
@@ -148,6 +141,8 @@ if __name__ == '__main__':
         questions.append(question)
         answers.append(answer)
 
+    #questions=questions[0:1]
+    #answers=answers[0:1]
     # get the closest docs for each question.
     logger.info('Initializing ranker...')
     ranker = retriever.get_class('tfidf')(tfidf_path=args.tfidf)
@@ -172,15 +167,15 @@ if __name__ == '__main__':
     logger.info("reranking ...")
 
     documents = []
-    ids = []
+    ids_and_scores = []
     docs_per_queston = []
-    for doc_ids, _ in closest_docs:
+    for doc_ids, scores in closest_docs:
         batch = []
         docs_per_queston.append(len(doc_ids))
-        for doc_id in doc_ids:
+        for doc_id, score in zip(doc_ids, scores):
             text = PROCESS_DB.get_doc_text(doc_id)
-            batch.append((utils.normalize(text), doc_id))
-            ids.append(doc_id)
+            batch.append((text, doc_id))
+            ids_and_scores.append((doc_id, score))
         documents.append(batch)
 
     samples = []
@@ -197,18 +192,15 @@ if __name__ == '__main__':
     torch.cuda.empty_cache()
 
     preds_and_docs = []
-    for pred, doc_id in zip(preds, ids):
-        preds_and_docs.append((pred, doc_id))
+    for pred, (doc_id, score) in zip(preds, ids_and_scores):
+        preds_and_docs.append((pred, doc_id, score))
 
     save = []
-    begin = 0
-    end = 0
-    i = 0
+    last_index = 0
     reranked_docs = []
-    for indice in docs_per_queston:
-        end+=1
-        to_sort = preds_and_docs[begin*indice:end*indice]
-        begin+=1
+    for n_doc in docs_per_queston:
+        to_sort = preds_and_docs[last_index:last_index+n_doc]
+        last_index += n_doc
         to_sort.sort(key= lambda x: x[0], reverse=True)
         save.append(to_sort)
         batch = []

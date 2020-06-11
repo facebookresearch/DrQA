@@ -66,7 +66,6 @@ if __name__ == '__main__':
 
     parser.add_argument('--reader-model-type', type=str, default=None)
     parser.add_argument('--reader-path', type=str, default=None)
-    parser.add_argument('--reader-output-dir', type=str, default=None)
     
     parser.add_argument('--save-dir', type=str, default=None)
     parser.add_argument('--match', type=str, default='string',
@@ -88,8 +87,6 @@ if __name__ == '__main__':
         questions.append(question)
         answers.append(answer)
 
-    questions = questions[0:1]
-    answers = answers[0:1]
     # get the closest docs for each question.
     logger.info('Initializing ranker...')
     ranker = retriever.get_class('tfidf')(tfidf_path=args.tfidf)
@@ -98,7 +95,7 @@ if __name__ == '__main__':
     closest_docs = ranker.batch_closest_docs(
             questions, k=args.n_docs, num_workers=args.num_workers
             )
-
+   
     tok_class = tokenizers.get_class(args.tokenizer)
     tok_opts = {}
     db_class = retriever.DocDB
@@ -112,23 +109,26 @@ if __name__ == '__main__':
     reranker = Reranker(args.rerank_model_type, args.rerank_path, args.rerank_max_seq)
     reranker.load_model()
     logger.info("reranking ...")
-
     documents = []
+    ids_and_scores = []
     docs_per_queston = []
-    for doc_ids, _ in closest_docs:
+    for doc_ids, scores in closest_docs:
         batch = []
         docs_per_queston.append(len(doc_ids))
-        for doc_id in doc_ids:
+        for doc_id, score in zip(doc_ids, scores):
             text = PROCESS_DB.get_doc_text(doc_id)
-            batch.append((utils.normalize(text), doc_id))
+            batch.append((text, doc_id))
+            ids_and_scores.append((doc_id, score))
         documents.append(batch)
 
     samples = []
-    uuid = 0
+    q_id=0
     for question, docs in zip(questions, documents):
+        p_id=0
         for doc, doc_id in docs:
-            samples.append(InputExample(guid=uuid, text_a=question, text_b=doc, label='not_answerable'))
-            uuid+=1
+            samples.append(InputExample(guid=str(q_id)+'_'+str(p_id), text_a=question, text_b=doc, label='not_answerable'))
+            p_id+=1
+        q_id+=1
 
     
     preds = reranker.evaluate(samples)
@@ -136,41 +136,38 @@ if __name__ == '__main__':
     del reranker
     torch.cuda.empty_cache()
 
-    logger.info('Reader ...')
-    reader = Reader(args.reader_model_type, args.reader_path, args.reader_output_dir)
-    reader.load_model()
-    
-    preds_and_docs = []
+    #import pandas as pd
+    preds_docs_guid = [] #pd.read_pickle(os.path.join(args.save_dir, 'reranked_preds')) 
     for index, pred in enumerate(preds):
-        preds_and_docs.append((pred, samples[index].text_a))
-
-    squad_samples = []
+        preds_docs_guid.append((pred, samples[index].text_b, samples[index].guid))
     save = []
-    begin = 0
-    end = 0
-    i = 0
-    for indice in docs_per_queston:
-        uuid=0
-        end+=1
-        to_sort = preds_and_docs[begin*indice:end*indice]
-        begin+=1
+    last_index = 0
+    squad_samples = []
+    for n_doc, question in zip(docs_per_queston, questions):
+    #for to_sort in preds_and_docs:
+        to_sort = preds_docs_guid[last_index:last_index+n_doc]
+        last_index += n_doc
         to_sort.sort(key= lambda x: x[0], reverse=True)
         save.append(to_sort)
-        for doc in to_sort[0:min(args.rerank_n_docs, len(to_sort))]:
+        for (_, passage, guid) in to_sort[0:min(args.rerank_n_docs, len(to_sort))]:
             squad_samples.append(SquadExample(
-                qas_id=str(i) + '_' + str(uuid),
-                question_text=questions[i],
-                context_text=doc[1],
+                qas_id=guid,
+                question_text=question,
+                context_text=passage,
                 answer_text='',
                 start_position_character=0,
                 title=''))
-            uuid+=1
-        i+=1
 
 
-    with open(os.path.join(args.save_dir, "preds"), 'wb') as fp:
-        pickle.dump(preds, fp)
-    with open(os.path.join(args.save_dir, "reranked_samples"), 'wb') as fp:
+    
+    logger.info('Initializing Reader ...')
+    reader = Reader(args.reader_model_type, args.reader_path, args.save_dir)
+    reader.load_model()
+    
+
+    reader.evaluate(squad_samples)
+
+    logger.info('Saving reranked docs with scores...')
+    with open(os.path.join(args.save_dir, "reranked_preds"), 'wb') as fp:
         pickle.dump(save, fp)
-    #reader.evaluate(squad_samples)
 

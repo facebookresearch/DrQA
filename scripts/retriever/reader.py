@@ -93,13 +93,13 @@ class Reader:
     def __transform_to_features(self, samples):
         features, dataset = squad_convert_examples_to_features(
                 examples=samples,
-                tokenizer=self.tokenizer, 
-                max_seq_length=self.max_seq, 
-                doc_stride=self.doc_stride, 
-                max_query_length=self.max_query_length, 
-                is_training=False, 
-                return_dataset='pt')
-
+                tokenizer=self.tokenizer,
+                max_seq_length=self.max_seq,
+                doc_stride=self.doc_stride,
+                max_query_length=self.max_query_length,
+                is_training=False,
+                return_dataset='pt',
+                threads=self.workers)
 
         sampler = SequentialSampler(dataset)
         dataloader = DataLoader(dataset, sampler=sampler, batch_size=self.batch_size)
@@ -197,13 +197,13 @@ class Reader:
                     all_results,
                     self.n_best_size,
                     self.max_answer_length,
-                    False,
+                    True,
                     output_prediction_file,
                     output_nbest_file,
                     output_null_log_odds_file,
                     False,
                     True,
-                    self.null_score_diff_threshold
-                    )
+                    self.null_score_diff_threshold,
+                    self.tokenizer)
 
             return predictions

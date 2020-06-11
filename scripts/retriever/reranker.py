@@ -11,7 +11,6 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, Tenso
 from tqdm import tqdm, trange
 
 from question_classifier.input_example import InputExample
-from question_classifier import utils as bert_utils
 from transformers import (
         WEIGHTS_NAME,
         AdamW,
@@ -39,6 +38,8 @@ from transformers import (
         get_linear_schedule_with_warmup,
         )
 
+from transformers import glue_convert_examples_to_features as convert_examples_to_features
+
 class Reranker:
 
     def __init__(self, model_type, model_path, max_seq, batch_size=256):
@@ -54,6 +55,7 @@ class Reranker:
                 'bert': (BertConfig, BertForSequenceClassification, BertTokenizer),
                 'xlnet': (XLNetConfig, XLNetForSequenceClassification, XLNetTokenizer),
                 'xlm': (XLMConfig, XLMForSequenceClassification, XLMTokenizer),
+                "roberta": (RobertaConfig, RobertaForSequenceClassification, RobertaTokenizer),
                 }
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -69,17 +71,22 @@ class Reranker:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.eval()
         preds = []
-        Softmax = torch.nn.Softmax(1)
+        Softmax = torch.nn.Softmax(dim=1)
 
-        for input_ids, input_mask, segment_ids, label_ids in tqdm(dataloader, desc="Evaluating"):
-            input_ids = input_ids.to(device)
-            input_mask = input_mask.to(device)
-            segment_ids = segment_ids.to(device)
-            label_ids = label_ids.to(device)
+        for batch in tqdm(dataloader, desc="Evaluating"):
+            batch = tuple(t.to(device) for t in batch)
+            
             with torch.no_grad():
-                output  = self.model(input_ids, segment_ids, input_mask, labels=None)
-                logits = output[0]
-                logits = Softmax(logits) 
+                inputs = {"input_ids": batch[0], "attention_mask": batch[1], 'labels':None}
+                if self.model_type != "distilbert":
+                    inputs["token_type_ids"] = (
+                            batch[2] if self.model_type in ["bert", "xlnet", "albert"] else None
+                            )  # XLM, DistilBERT, RoBERTa, and XLM-RoBERTa don't use segment_ids
+            
+                outputs = self.model(**inputs)
+            
+            logits = outputs[0]
+            logits = Softmax(logits) 
             if len(preds) == 0:
                 preds.append(logits.detach().cpu().numpy())
             else:
@@ -87,25 +94,26 @@ class Reranker:
 
 
         preds = preds[0]
-        preds = [preds[i,1] for i in range(len(preds))]
+        preds = [pred for (pred,_) in preds]
         return preds
 
     def __transform_to_features(self, samples):
 
-        features = bert_utils.convert_examples_to_features(samples,['not_answerable', 'answerable'], self.max_seq, self.tokenizer,'classification', 
-                cls_token_at_end=bool(self.model_type in ['xlnet']),
-                cls_token=self.tokenizer.cls_token,
-                sep_token=self.tokenizer.sep_token,
-                cls_token_segment_id=2 if self.model_type in ['xlnet'] else 0,
-                pad_on_left=bool(self.model_type in ['xlnet']),
-                pad_token_segment_id=4 if self.model_type in ['xlnet'] else 0)
-
+        features = convert_examples_to_features(samples, 
+                self.tokenizer, 
+                self.max_seq,
+                label_list=['answerable','not_answerable'], 
+                output_mode='classification', 
+                pad_on_left=bool(self.model_type in ["xlnet"]),
+                pad_token=self.tokenizer.convert_tokens_to_ids([self.tokenizer.pad_token])[0],
+                pad_token_segment_id=4 if self.model_type in ["xlnet"] else 0,
+                )
         all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
-        all_input_mask = torch.tensor([f.input_mask for f in features], dtype=torch.long)
-        all_segment_ids = torch.tensor([f.segment_ids for f in features], dtype=torch.long)
-        all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.long)
+        all_attention_mask = torch.tensor([f.attention_mask for f in features], dtype=torch.long)
+        all_token_types_ids = torch.tensor([f.token_type_ids for f in features], dtype=torch.long)
+        all_labels = torch.tensor([f.label for f in features], dtype=torch.long)
 
-        data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+        data = TensorDataset(all_input_ids, all_attention_mask, all_token_types_ids, all_labels)
         sampler = SequentialSampler(data)
         dataloader = DataLoader(data, sampler=sampler, batch_size=self.batch_size)
 

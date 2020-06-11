@@ -13,6 +13,7 @@ import json
 import time
 import os
 import numpy as np
+import regex
 
 from multiprocessing import Pool as ProcessPool
 from multiprocessing.util import Finalize
@@ -78,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument('--doc-db', type=str, default=None,
             help='Path to Document DB')
     parser.add_argument('--tokenizer', type=str, default='regexp')
-    parser.add_argument('--n-docs', type=int, default=200)
+    parser.add_argument('--n-docs', type=int, default=5)
     parser.add_argument('--tfidf', type=str, default=None)
     parser.add_argument('--num-workers', type=int, default=1)
 
@@ -107,8 +108,6 @@ if __name__ == '__main__':
         questions.append(question)
         answers.append(answer)
 
-    questions = questions[0:1]
-    answers = answers[0:1]
     # get the closest docs for each question.
     logger.info('Initializing ranker...')
     ranker = retriever.get_class('tfidf')(tfidf_path=args.tfidf)
@@ -138,16 +137,17 @@ if __name__ == '__main__':
     documents = []
     docs_per_queston = []
     for doc_ids, _ in closest_docs:
-        doc_id = doc_ids[0]
-        text = PROCESS_DB.get_doc_text(doc_id)
-        passages = reconstruct_with_max_seq(text, args.max_seq, tokenizer)
+        passages = []
+        for doc_id in doc_ids:
+            text = PROCESS_DB.get_doc_text(doc_id)
+            passages = passages + reconstruct_with_max_seq(text, args.max_seq, tokenizer)
         docs_per_queston.append(len(passages))
         documents.append([p for p in passages])
 
     samples = []
     uuid = 0
     for question, docs in zip(questions, documents):
-        for doc, doc_id in docs:
+        for doc in docs:
             samples.append(InputExample(guid=uuid, text_a=question, text_b=doc, label='not_answerable'))
             uuid+=1
 
@@ -157,7 +157,7 @@ if __name__ == '__main__':
     
     preds_and_docs = []
     for index, pred in enumerate(preds):
-        preds_and_docs.append((pred, samples[index].text_a))
+        preds_and_docs.append((pred, samples[index].text_b))
 
 
     logger.info('preparing data for extraction...')
@@ -175,7 +175,7 @@ if __name__ == '__main__':
         for doc in document:
             squad_samples.append(SquadExample(
                 qas_id=str(q_id) + '_' + str(c_id),
-                question_text=questions[i],
+                question_text=questions[q_id],
                 context_text=doc[1],
                 answer_text='',
                 start_position_character=0,
@@ -183,7 +183,8 @@ if __name__ == '__main__':
             c_id+=1
         q_id+=1
 
-
+    
+    logger.info(squad_samples[0])
     logger.info('Evaluating...')
     reader.evaluate(squad_samples)
 
