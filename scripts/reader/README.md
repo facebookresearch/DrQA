@@ -105,7 +105,7 @@ Using pre-trained word embeddings is very important for performance. The models 
 We suggest downloading the embeddings files and storing them under `data/embeddings/<file>.txt` (this is the default for `--embedding-dir`). The code expects space separated plain text files (\<token\> \<d1\> ... \<dN\>).
 
 - [GloVe: Common Crawl (cased)](http://nlp.stanford.edu/data/wordvecs/glove.840B.300d.zip)
-- [FastText: Wikipedia (uncased)](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.en.vec)
+- [FastText: Wikipedia (uncased)](https://dl.fbaipublicfiles.com/fasttext/vectors-english/wiki-news-300d-1M.vec.zip)
 
 ## Predicting
 
