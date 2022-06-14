@@ -396,4 +396,4 @@ This implementation of the DrQA Document Reader is closely related to the one fo
 [Hamed Zaghaghi](https://github.com/zaghaghi/) has provided a wrapper for a [Web UI](https://github.com/zaghaghi/drqa-webui).
 
 ## License
-DrQA is BSD-licensed. We also provide an additional patent grant.
+DrQA is BSD-licensed.
