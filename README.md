@@ -101,11 +101,11 @@ _Setting up DrQA is easy!_
 
 DrQA requires Linux/OSX and Python 3.5 or higher. It also requires installing [PyTorch](http://pytorch.org/) version 1.0. Its other dependencies are listed in requirements.txt. CUDA is strongly recommended for speed, but not necessary.
 
-Run the following commands to clone the repository and install DrQA:
+Run the following commands to clone the repository and install DrQA into a virtual environment:
 
 ```bash
 git clone https://github.com/facebookresearch/DrQA.git
-cd DrQA; pip install -r requirements.txt; python setup.py develop
+cd DrQA; python3.8 -m venv venv; venv/bin/pip install --upgrade pip setuptools wheel; venv/bin/pip install -r requirements.txt; venv/bin/python setup.py develop
 ```
 
 Note: requirements.txt includes a subset of all the possible required packages. Depending on what you want to run, you might need to install an extra package (e.g. spacy).
