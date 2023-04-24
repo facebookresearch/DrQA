@@ -101,16 +101,20 @@ _Setting up DrQA is easy!_
 
 DrQA requires Linux/OSX and Python 3.5 or higher. It also requires installing [PyTorch](http://pytorch.org/) version 1.0. Its other dependencies are listed in requirements.txt. CUDA is strongly recommended for speed, but not necessary.
 
-Run the following commands to clone the repository and install DrQA:
+Run the following commands to clone the repository and install DrQA into a virtual environment:
 
 ```bash
 git clone https://github.com/facebookresearch/DrQA.git
-cd DrQA; pip install -r requirements.txt; python setup.py develop
+cd DrQA; python3.8 -m venv venv; venv/bin/pip install --upgrade pip setuptools wheel; venv/bin/pip install -r requirements.txt; venv/bin/python setup.py develop
 ```
 
 Note: requirements.txt includes a subset of all the possible required packages. Depending on what you want to run, you might need to install an extra package (e.g. spacy).
 
-If you use the CoreNLPTokenizer or SpacyTokenizer you also need to download the Stanford CoreNLP jars and spaCy `en` model, respectively. If you use Stanford CoreNLP, have the jars in your java `CLASSPATH` environment variable, or set the path programmatically with:
+- If you want to use the CoreNLPTokenizer, you need to download the Stanford CoreNLP release and extract the jar files from the archive:
+  <https://stanfordnlp.github.io/CoreNLP/download.html#getting-a-copy>
+- If you want to use the SpacyTokenizer, you need to download spaCy `en` model:  
+      python -m spacy download en_core_web_sm
+- If you use Stanford CoreNLP, have the jars in your java `CLASSPATH` environment variable, or set the path programmatically with:
 
 ```python
 import drqa.tokenizers
@@ -119,7 +123,7 @@ drqa.tokenizers.set_default('corenlp_classpath', '/your/corenlp/classpath/*')
 
 **IMPORTANT: The default [tokenizer](#tokenizers) is CoreNLP so you will need that in your `CLASSPATH` to run the README examples.**
 
-Ex: `export CLASSPATH=$CLASSPATH:/path/to/corenlp/download/*`.
+E.g.: `export CLASSPATH=$CLASSPATH:/path/to/corenlp/download/*`.
 
 If you do not already have a CoreNLP [download](https://stanfordnlp.github.io/CoreNLP/index.html#download) you can run:
 
