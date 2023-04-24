@@ -123,7 +123,7 @@ drqa.tokenizers.set_default('corenlp_classpath', '/your/corenlp/classpath/*')
 
 **IMPORTANT: The default [tokenizer](#tokenizers) is CoreNLP so you will need that in your `CLASSPATH` to run the README examples.**
 
-Ex: `export CLASSPATH=$CLASSPATH:/path/to/corenlp/download/*`.
+E.g.: `export CLASSPATH=$CLASSPATH:/path/to/corenlp/download/*`.
 
 If you do not already have a CoreNLP [download](https://stanfordnlp.github.io/CoreNLP/index.html#download) you can run:
 
