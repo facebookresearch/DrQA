@@ -12,13 +12,13 @@ This is a PyTorch implementation of the DrQA system described in the ACL 2017 pa
 
 <p align="center"><img width="70%" src="img/drqa.png" /></p>
 
-DrQA is a system for reading comprehension applied to open-domain question answering. In particular, DrQA is targeted at the task of "machine reading at scale" (MRS). In this setting, we are searching for an answer to a question in a potentially very large corpus of unstructured documents (that may not be redundant). Thus the system has to combine the challenges of document retrieval (finding the relevant documents) with that of machine comprehension of text (identifying the answers from those documents).
+DrQA is a system designed for open-domain question answering, particularly for "machine reading at scale" (MRS). It addresses the challenge of finding answers in a vast, unstructured document corpus, combining document retrieval and machine comprehension.
 
-Our experiments with DrQA focus on answering factoid questions while using Wikipedia as the unique knowledge source for documents. Wikipedia is a well-suited source of large-scale, rich, detailed information. In order to answer any question, one must first retrieve the few potentially relevant articles among more than 5 million, and then scan them carefully to identify the answer.
+Our DrQA experiments focus on factoid questions, using Wikipedia as the primary knowledge source. To answer questions, the system retrieves potentially relevant articles from over 5 million in the Wikipedia corpus and then scans them for answers.
 
-Note that DrQA treats Wikipedia as a generic collection of articles and does not rely on its internal graph structure. As a result, **_DrQA can be straightforwardly applied to any collection of documents_**, as described in the retriever [README](scripts/retriever/README.md).
+DrQA treats Wikipedia as a generic article collection, not relying on its internal graph structure. This makes it applicable to any document collection, as explained in the retriever README.
 
-This repository includes code, data, and pre-trained models for processing and querying Wikipedia as described in the paper -- see [Trained Models and Data](#trained-models-and-data). We also list several different datasets for evaluation, see [QA Datasets](#qa-datasets). Note that this work is a refactored and more efficient version of the original code. Reproduction numbers are very similar but not exact.
+The repository provides code, data, and pre-trained models for processing and querying Wikipedia. Multiple datasets for evaluation are also listed in the QA Datasets section. This work is an improved and more efficient version of the original code, with similar but not identical reproduction results.
 
 ## Quick Start: Demo
 
